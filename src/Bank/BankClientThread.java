@@ -50,7 +50,20 @@ public class BankClientThread extends Thread {
     }
 
     public void interactWithAuctionHouse() {
+        String hostname = "";
+        String portNumber = "";
+        while (!clientMessage.equals("terminate")) {
+            try {
+                serverMessage = "Please enter your hostname: ";
+                outputStream.writeUTF(serverMessage);
+                outputStream.flush();
+                clientMessage = inputStream.readUTF();
 
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        }
     }
 
 }
