@@ -34,13 +34,15 @@ public class BankClientThread extends Thread {
                 outputStream.writeUTF(serverMessage);
                 outputStream.flush();
                 clientMessage = inputStream.readUTF();
-                if(clientMessage.equals("a")) {
+                if(clientMessage.split(" ")[0].equals("a")) {
                     System.out.println("Code for agent");
+                    interactWithAgent();
                 }
 
-                else if(clientMessage.equals("h")) {
+                else if(clientMessage.split(" ")[0].equals("h")) {
                     System.out.println("Code for auction house");
-                    interactWithAuctionHouse();
+                    interactWithAuctionHouse(clientMessage.split(" ")[1],
+                            Integer.parseInt(clientMessage.split(" ")[2]));
                 }
             }
             inputStream.close();
@@ -54,29 +56,14 @@ public class BankClientThread extends Thread {
         }
     }
 
-    public void interactWithAuctionHouse() {
-        String hostname = "";
-        String portNumber = "";
+    public void interactWithAuctionHouse(String hostName, int portNumber) {
         while (!clientMessage.equals("terminate")) {
             try {
-                serverMessage = "Please enter your hostname and port number : ";
-                outputStream.writeUTF(serverMessage);
-                outputStream.flush();
-                clientMessage = inputStream.readUTF();
-                System.out.println(clientMessage);
-                hostname = clientMessage.split(" ")[0];
-                System.out.println(hostname);
-                portNumber = clientMessage.split(" ")[1];
-                System.out.println(portNumber);
-                if(isInteger(portNumber)){
-                    allHouses.add(new AuctionHouse(hostname,Integer.parseInt(portNumber)));
-                    System.out.println("bank got registered");
-                    outputStream.writeUTF("Your house is successfully registered.");
-                    waitForAuctionHouse();
-                } else {
-                    System.out.println("please give the valid port number");
-                }
-
+                allHouses.add(new AuctionHouse(hostName,portNumber));
+                System.out.println("AuctionHouse got registered in Bank");
+                outputStream.writeUTF("Your house is successfully registered.");
+                System.out.println(" with host name +" + hostName + "and port number "+ portNumber);
+                waitForAuctionHouse();
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -102,15 +89,32 @@ public class BankClientThread extends Thread {
         }
     }
 
-    public boolean isInteger(String str){
-        try{
-            Integer.parseInt(str);
-        } catch(NumberFormatException e){
-            return false;
-        } catch (NullPointerException e){
-            return false;
+//    public boolean isInteger(String str){
+//        try{
+//            Integer.parseInt(str);
+//        } catch(NumberFormatException e){
+//            return false;
+//        } catch (NullPointerException e){
+//            return false;
+//        }
+//        return true;
+//    }
+
+    public void interactWithAgent(){
+        while(!clientMessage.equals("terminate")){
+            try{
+                clientMessage = inputStream.readUTF();
+                if(clientMessage.equals("Give Auction House List")){
+                    for(int i = 0; i<allHouses.size(); i++){
+                        outputStream.writeUTF("Hostname : "+allHouses.get(i).getHostname()+" Portname" +
+                                allHouses.get(i).getPort());
+                    }
+                }
+            } catch (IOException e){
+                e.printStackTrace();
+            }
         }
-        return true;
     }
+
 
 }

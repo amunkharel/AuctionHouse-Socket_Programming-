@@ -17,6 +17,4 @@ public class AuctionHouse {
     public int getPort(){
         return port;
     }
-
-
 }
