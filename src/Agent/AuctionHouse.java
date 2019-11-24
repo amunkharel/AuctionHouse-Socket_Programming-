@@ -1,4 +1,4 @@
-package AuctionHouse;
+package Agent;
 
 import java.io.*;
 import java.net.Socket;
@@ -16,9 +16,9 @@ public class AuctionHouse {
             while (!clientMessage.equals("terminate")) {
                 serverMessage = inputStream.readUTF();
                 System.out.println(serverMessage);
-                outputStream.writeUTF("h");
+                clientMessage = br.readLine();
+                outputStream.writeUTF(clientMessage);
                 outputStream.flush();
-                serverMessage = inputStream.readUTF();
             }
 
         } catch (IOException e) {

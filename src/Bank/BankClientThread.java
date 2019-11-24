@@ -26,7 +26,7 @@ public class BankClientThread extends Thread {
             inputStream = new DataInputStream(serverClient.getInputStream());
             outputStream = new DataOutputStream(serverClient.getOutputStream());
             while (!clientMessage.equals("terminate")) {
-                serverMessage = "You are now connected to bank server. Please type 'a' if you are a agent and 'h' if you represent auction house";
+                serverMessage = "You are now connected to bank server.";
                 outputStream.writeUTF(serverMessage);
                 outputStream.flush();
                 clientMessage = inputStream.readUTF();
