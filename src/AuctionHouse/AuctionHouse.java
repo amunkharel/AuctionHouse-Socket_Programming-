@@ -1,6 +1,4 @@
-package finalProject;
+package AuctionHouse;
 
 public class AuctionHouse {
-
-
 }
