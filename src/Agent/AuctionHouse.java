@@ -12,13 +12,14 @@ public class AuctionHouse {
             DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             String clientMessage = "", serverMessage = "";
-
             while (!clientMessage.equals("terminate")) {
                 serverMessage = inputStream.readUTF();
                 System.out.println(serverMessage);
-                clientMessage = br.readLine();
-                outputStream.writeUTF(clientMessage);
+                outputStream.writeUTF("h");
                 outputStream.flush();
+                serverMessage = inputStream.readUTF();
+                System.out.println(serverMessage);
+                outputStream.writeUTF(br.readLine());
             }
 
         } catch (IOException e) {
