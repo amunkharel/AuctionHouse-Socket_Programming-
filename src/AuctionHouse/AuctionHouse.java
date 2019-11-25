@@ -27,6 +27,12 @@ public class AuctionHouse {
             if(isInteger(readString)){
                 portNumber = Integer.parseInt(readString);
             }
+
+            AuctionServer auctionServer = new AuctionServer(portNumber, address.getHostAddress());
+
+            auctionServer.run();
+
+            System.out.println("Hello World");
             String clientMessage = "", serverMessage = "";
             setItem();
             while (!clientMessage.equals("terminate")) {
@@ -35,6 +41,8 @@ public class AuctionHouse {
                 serverMessage = inputStream.readUTF();
                 System.out.println(serverMessage);
             }
+
+
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -46,6 +54,7 @@ public class AuctionHouse {
         itemList.add(new Item("microwave", 10));
         itemList.add(new Item("Freezer", 200));
     }
+
     public boolean isInteger(String str){
         try{
             Integer.parseInt(str);

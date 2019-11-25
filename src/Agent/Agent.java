@@ -6,7 +6,8 @@ import java.util.Scanner;
 
 public class Agent {
 
-
+    private int currentAuctionPort;
+    private String currentAuctionHost;
     public void startServer(){
         try {
             Socket bankSocket = new Socket("127.0.01",8888);
@@ -31,6 +32,8 @@ public class Agent {
                 serverMessage = inputStream.readUTF();
                 String[] strArray = serverMessage.split(" ");
                 for(int i =0; i< strArray.length; i+=2){
+                    currentAuctionPort = Integer.parseInt(strArray[i+1]);
+                    currentAuctionHost = strArray[i];
                     System.out.println("Auction Host name "+ strArray[i] +" Auction Port: "+ strArray[i+1]);
                     System.out.println("\n");
                 }
@@ -41,6 +44,30 @@ public class Agent {
             e.printStackTrace();
         }
 
+    }
+
+    public void connectToAuctionHouse(String hostNumber, int portName) {
+        try{
+            Socket socket=new Socket(hostNumber,portName);
+            DataInputStream inStream=new DataInputStream(socket.getInputStream());
+            DataOutputStream outStream=new DataOutputStream(socket.getOutputStream());
+            BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+            String clientMessage="",serverMessage="";
+            while(!clientMessage.equals("terminate")){
+                serverMessage=inStream.readUTF();
+                System.out.println(serverMessage);
+
+                clientMessage=br.readLine();
+                outStream.writeUTF(clientMessage);
+                outStream.flush();
+
+            }
+            outStream.close();
+            outStream.close();
+            socket.close();
+        }catch(Exception e){
+            System.out.println(e);
+        }
     }
 
     public boolean isInteger(String str){
