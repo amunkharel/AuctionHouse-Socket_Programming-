@@ -3,12 +3,14 @@ package AuctionHouse;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Scanner;
 
 public class AuctionHouse {
 
     private int portNumber;
-
+    private List<Item> itemList = new ArrayList<Item>();
     public AuctionHouse() {
     }
 
@@ -26,6 +28,7 @@ public class AuctionHouse {
                 portNumber = Integer.parseInt(readString);
             }
             String clientMessage = "", serverMessage = "";
+            setItem();
             while (!clientMessage.equals("terminate")) {
                 outputStream.writeUTF("h " + address.getHostAddress() + " "+ portNumber);
                 outputStream.flush();
@@ -37,6 +40,11 @@ public class AuctionHouse {
             e.printStackTrace();
         }
 
+    }
+
+    public void setItem(){
+        itemList.add(new Item("microwave", 10));
+        itemList.add(new Item("Freezer", 200));
     }
     public boolean isInteger(String str){
         try{
