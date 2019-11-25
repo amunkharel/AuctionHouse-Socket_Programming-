@@ -25,12 +25,12 @@ public class AuctionHouse {
             if(isInteger(readString)){
                 portNumber = Integer.parseInt(readString);
             }
-            System.out.println("this is port number "+ portNumber);
             String clientMessage = "", serverMessage = "";
             while (!clientMessage.equals("terminate")) {
                 outputStream.writeUTF("h " + address.getHostAddress() + " "+ portNumber);
                 outputStream.flush();
                 serverMessage = inputStream.readUTF();
+                System.out.println(serverMessage);
             }
 
         } catch (IOException e) {

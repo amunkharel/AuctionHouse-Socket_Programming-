@@ -4,9 +4,12 @@ public class AuctionHouse {
     private String hostname;
     private int port;
 
-    public AuctionHouse(String hostname, int port){
+    private  int id;
+
+    public AuctionHouse(int id, String hostname, int port){
         this.hostname = hostname;
         this.port = port;
+        this.id = id;
     }
 
 

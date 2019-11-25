@@ -8,6 +8,7 @@ import java.net.Socket;
 import java.nio.channels.ClosedByInterruptException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 
 public class BankClientThread extends Thread {
 
@@ -17,7 +18,8 @@ public class BankClientThread extends Thread {
     private DataOutputStream outputStream;
     private String clientMessage = "";
     private String serverMessage = "";
-    private List<AuctionHouse> allHouses = new ArrayList<AuctionHouse>();
+    private static List<AuctionHouse> allHouses = new ArrayList<AuctionHouse>();
+    private static List<Agent> agents = new ArrayList<Agent>();
 
 
     public BankClientThread(int clientNumber, Socket serverClient) {
@@ -36,7 +38,8 @@ public class BankClientThread extends Thread {
                 clientMessage = inputStream.readUTF();
                 if(clientMessage.split(" ")[0].equals("a")) {
                     System.out.println("Code for agent");
-                    interactWithAgent();
+                    interactWithAgent(clientMessage.split(" ")[1],
+                            Integer.parseInt(clientMessage.split(" ")[2]));
                 }
 
                 else if(clientMessage.split(" ")[0].equals("h")) {
@@ -50,7 +53,7 @@ public class BankClientThread extends Thread {
             serverClient.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.toString());
         }finally{
             System.out.println("Client -" + clientNumber + " exit!! ");
         }
@@ -59,10 +62,11 @@ public class BankClientThread extends Thread {
     public void interactWithAuctionHouse(String hostName, int portNumber) {
         while (!clientMessage.equals("terminate")) {
             try {
-                allHouses.add(new AuctionHouse(hostName,portNumber));
+                allHouses.add(new AuctionHouse(clientNumber,hostName,portNumber));
                 System.out.println("AuctionHouse got registered in Bank");
                 outputStream.writeUTF("Your house is successfully registered.");
                 System.out.println(" with host name +" + hostName + "and port number "+ portNumber);
+                outputStream.flush();
                 waitForAuctionHouse();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -89,32 +93,68 @@ public class BankClientThread extends Thread {
         }
     }
 
-//    public boolean isInteger(String str){
-//        try{
-//            Integer.parseInt(str);
-//        } catch(NumberFormatException e){
-//            return false;
-//        } catch (NullPointerException e){
-//            return false;
-//        }
-//        return true;
-//    }
 
-    public void interactWithAgent(){
+
+    public void interactWithAgent(String agentName, double amount){
         while(!clientMessage.equals("terminate")){
+
             try{
-                clientMessage = inputStream.readUTF();
-                if(clientMessage.equals("Give Auction House List")){
-                    for(int i = 0; i<allHouses.size(); i++){
-                        outputStream.writeUTF("Hostname : "+allHouses.get(i).getHostname()+" Portname" +
-                                allHouses.get(i).getPort());
-                    }
-                }
+                agents.add(new Agent(clientNumber, amount, agentName));
+                System.out.println("Agent got registered in Bank");
+
+                waitForAgent();
             } catch (IOException e){
                 e.printStackTrace();
             }
         }
     }
 
+    public void waitForAgent() throws IOException {
+        clientMessage = "";
+        while(!clientMessage.equals("terminate")){
+            try{
+                int menuOption = -1;
+                serverMessage = inputStream.readUTF();
+                if(isInteger(serverMessage)) {
+                    menuOption = Integer.parseInt(serverMessage);
+                }
+                switch (menuOption){
+                    case 1:
+                        System.out.println("we got case 1 ");
+                        outputStream.writeUTF(auctionInformation());
+                        outputStream.flush();
+                        break;
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        if(clientMessage.equals("terminate")){
+            outputStream.close();
+            serverClient.close();
+        }
+    }
+
+    public String auctionInformation(){
+        String str="";
+        for(int i =0; i <allHouses.size();i ++){
+            str += allHouses.get(i).getHostname() + " "+allHouses.get(i).getPort();
+        }
+        System.out.println("bank has this information "+ str);
+        return str;
+    }
+
+        public boolean isInteger(String str){
+        try{
+            Integer.parseInt(str);
+        } catch(NumberFormatException e){
+            return false;
+        } catch (NullPointerException e){
+            return false;
+        }
+        return true;
+    }
 
 }
