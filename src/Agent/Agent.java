@@ -37,6 +37,7 @@ public class Agent {
                     System.out.println("Auction Host name "+ strArray[i] +" Auction Port: "+ strArray[i+1]);
                     System.out.println("\n");
                 }
+                connectToAuctionHouse(currentAuctionHost,currentAuctionPort);
             }
 
         }

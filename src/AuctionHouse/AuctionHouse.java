@@ -30,14 +30,21 @@ public class AuctionHouse {
 
             AuctionServer auctionServer = new AuctionServer(portNumber, address.getHostAddress());
 
-            auctionServer.run();
+
 
             System.out.println("Hello World");
             String clientMessage = "", serverMessage = "";
             setItem();
+            boolean runServer = true;
             while (!clientMessage.equals("terminate")) {
                 outputStream.writeUTF("h " + address.getHostAddress() + " "+ portNumber);
+
                 outputStream.flush();
+                if(runServer) {
+                    runServer= false;
+                    auctionServer.run();
+
+                }
                 serverMessage = inputStream.readUTF();
                 System.out.println(serverMessage);
             }
