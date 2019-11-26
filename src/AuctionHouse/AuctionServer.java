@@ -30,8 +30,10 @@ public class AuctionServer implements Runnable{
             while (true) {
                 Socket serverClient = serverSocket.accept(); //accept client side
 
-                AuctionClientThread auctionClientThread = new AuctionClientThread(serverClient);
-                auctionClientThread.run();
+//                AuctionClientThread auctionClientThread = new AuctionClientThread(serverClient);
+//                auctionClientThread.run();
+                Thread threadAuctionClientThread = new Thread(new AuctionClientThread(serverClient));
+                threadAuctionClientThread.start();
             }
 
         } catch (IOException e) {

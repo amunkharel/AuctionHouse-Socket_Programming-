@@ -16,7 +16,7 @@ public class AuctionHouse {
 
     public void startServer() {
         try {
-            InetAddress address = InetAddress.getLocalHost();
+            InetAddress address = InetAddress.getLocalHost(); //take input from user
             Socket socket = new Socket("127.0.0.1", 8888);
             DataInputStream inputStream = new DataInputStream(socket.getInputStream());
             DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
@@ -28,7 +28,10 @@ public class AuctionHouse {
                 portNumber = Integer.parseInt(readString);
             }
 
-            AuctionServer auctionServer = new AuctionServer(portNumber, address.getHostAddress());
+            //AuctionServer auctionServer = new AuctionServer(portNumber, address.getHostAddress());
+            //auctionServer.run();
+            Thread threadServer = new Thread(new AuctionServer(portNumber,"127.0.0.1"));
+            threadServer.start();
 
 
 
@@ -37,14 +40,13 @@ public class AuctionHouse {
             setItem();
             boolean runServer = true;
             while (!clientMessage.equals("terminate")) {
-                outputStream.writeUTF("h " + address.getHostAddress() + " "+ portNumber);
-
+                outputStream.writeUTF("h " + "127.0.0.1" + " "+ portNumber);
                 outputStream.flush();
-                if(runServer) {
-                    runServer= false;
-                    auctionServer.run();
-
-                }
+//                if(runServer) {
+//                    runServer= false;
+//                    //auctionServer.run();
+//
+//                }
                 serverMessage = inputStream.readUTF();
                 System.out.println(serverMessage);
             }
