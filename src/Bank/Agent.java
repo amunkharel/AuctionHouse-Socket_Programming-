@@ -4,16 +4,20 @@ public class Agent {
 
     private int id;
 
-    private double amount;
+    private int amount;
 
     private String name;
 
-    public Agent(int id, double amount, String name) {
+    public Agent(int id, int amount, String name) {
         this.id = id;
 
         this.amount = amount;
 
         this.name = name;
+    }
+
+    public int getAmount(){
+        return amount;
     }
 
 

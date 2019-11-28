@@ -27,6 +27,10 @@ public class AuctionHouse {
         return balance;
     }
 
+    public int getId(){
+        return id;
+    }
+
     public void setBalance(int add){
         balance += add;
     }

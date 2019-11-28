@@ -21,6 +21,7 @@ public class BankClientThread extends Thread {
     private static List<AuctionHouse> allHouses = new ArrayList<AuctionHouse>();
     private static List<Agent> agents = new ArrayList<Agent>();
     private AuctionHouse auctionHouse = null;
+    private Agent agent = null;
 
 
     public BankClientThread(int clientNumber, Socket serverClient) {
@@ -80,6 +81,7 @@ public class BankClientThread extends Thread {
         switch(clientMessage){
             case "balance":
                 outputStream.writeUTF("Your balance is "+ auctionHouse.getBalance());
+                waitForAuctionHouse();
                 break;
             case "terminate":
                 outputStream.writeUTF("Your program is terminating");
@@ -87,9 +89,6 @@ public class BankClientThread extends Thread {
             default:
                 waitForAuctionHouse();
         }
-
-
-
         if(clientMessage.equals("terminate")){
             outputStream.close();
             inputStream.close();
@@ -99,42 +98,31 @@ public class BankClientThread extends Thread {
 
 
 
-    public void interactWithAgent(String agentName, double amount){
-        while(!clientMessage.equals("terminate")){
+    public void interactWithAgent(String agentName, int amount){
 
-            try{
-                agents.add(new Agent(clientNumber, amount, agentName));
-                System.out.println("Agent got registered in Bank");
-
-                waitForAgent();
-            } catch (IOException e){
-                e.printStackTrace();
-            }
+        try{
+            agent = new Agent(clientNumber, amount, agentName);
+            agents.add(agent);
+            System.out.println("Agent got registered in Bank");
+            waitForAgent();
+        } catch (IOException e){
+            e.printStackTrace();
         }
+
     }
 
     public void waitForAgent() throws IOException {
-        clientMessage = "";
-        while(!clientMessage.equals("terminate")){
-            try{
-                int menuOption = -1;
-                serverMessage = inputStream.readUTF();
-                if(isInteger(serverMessage)) {
-                    menuOption = Integer.parseInt(serverMessage);
-                }
-                switch (menuOption){
-                    case 1:
-                        System.out.println("we got case 1 ");
-                        outputStream.writeUTF(auctionInformation());
-                        outputStream.flush();
-                        break;
-                }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        clientMessage = inputStream.readUTF();
+        switch(clientMessage){
+            case "ListAuctionHouse":
+                outputStream.writeUTF(auctionInformation());
+                outputStream.flush();
+                waitForAgent();
+                break;
+            case "balance":
+                outputStream.writeUTF(""+agent.getAmount());
+                break;
         }
-
         if(clientMessage.equals("terminate")){
             outputStream.close();
             serverClient.close();
@@ -144,7 +132,7 @@ public class BankClientThread extends Thread {
     public String auctionInformation(){
         String str="";
         for(int i =0; i <allHouses.size();i ++){
-            str += allHouses.get(i).getHostname() + " "+allHouses.get(i).getPort();
+            str += allHouses.get(i).getId() + " " +allHouses.get(i).getHostname() + " "+allHouses.get(i).getPort();
         }
         System.out.println("bank has this information "+ str);
         return str;
