@@ -18,7 +18,7 @@ public class Bank {
             while (true) {
                 clientCounter++;
                 Socket serverClient = serverSocket.accept(); //accept client side
-                System.out.println(">> " + "Client No: " + clientCounter + "started!!");
+                System.out.println(">> " + "Client No: " + clientCounter + " started!!");
                 BankClientThread bankClientThread = new BankClientThread(clientCounter,serverClient);
                 bankClientThread.start();
             }

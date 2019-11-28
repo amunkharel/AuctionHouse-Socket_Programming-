@@ -20,6 +20,7 @@ public class BankClientThread extends Thread {
     private String serverMessage = "";
     private static List<AuctionHouse> allHouses = new ArrayList<AuctionHouse>();
     private static List<Agent> agents = new ArrayList<Agent>();
+    private AuctionHouse auctionHouse = null;
 
 
     public BankClientThread(int clientNumber, Socket serverClient) {
@@ -31,23 +32,22 @@ public class BankClientThread extends Thread {
         try {
             inputStream = new DataInputStream(serverClient.getInputStream());
             outputStream = new DataOutputStream(serverClient.getOutputStream());
-            while (!clientMessage.equals("terminate")) {
-                serverMessage = "You are now connected to bank server.";
-                outputStream.writeUTF(serverMessage);
-                outputStream.flush();
-                clientMessage = inputStream.readUTF();
-                if(clientMessage.split(" ")[0].equals("a")) {
-                    System.out.println("Code for agent");
-                    interactWithAgent(clientMessage.split(" ")[1],
-                            Integer.parseInt(clientMessage.split(" ")[2]));
-                }
-
-                else if(clientMessage.split(" ")[0].equals("h")) {
-                    System.out.println("Code for auction house");
-                    interactWithAuctionHouse(clientMessage.split(" ")[1],
-                            Integer.parseInt(clientMessage.split(" ")[2]));
-                }
+            serverMessage = "You are now connected to bank server.";
+            outputStream.writeUTF(serverMessage);
+            outputStream.flush();
+            clientMessage = inputStream.readUTF();
+            if(clientMessage.split(" ")[0].equals("a")) {
+                System.out.println("Code for agent");
+                interactWithAgent(clientMessage.split(" ")[1],
+                        Integer.parseInt(clientMessage.split(" ")[2]));
             }
+
+            else if(clientMessage.split(" ")[0].equals("h")) {
+                System.out.println("Code for auction house");
+                interactWithAuctionHouse(clientMessage.split(" ")[1],
+                        Integer.parseInt(clientMessage.split(" ")[2]));
+            }
+
             inputStream.close();
             outputStream.close();
             serverClient.close();
@@ -60,35 +60,39 @@ public class BankClientThread extends Thread {
     }
 
     public void interactWithAuctionHouse(String hostName, int portNumber) {
-        while (!clientMessage.equals("terminate")) {
-            try {
-                allHouses.add(new AuctionHouse(clientNumber,hostName,portNumber));
+
+        try {
+                auctionHouse = new AuctionHouse(clientNumber,hostName,portNumber);
+                allHouses.add(auctionHouse);
                 System.out.println("AuctionHouse got registered in Bank");
                 outputStream.writeUTF("Your house is successfully registered.");
-                System.out.println(" with host name +" + hostName + "and port number "+ portNumber);
+                System.out.println(" with host name " + hostName + "and port number "+ portNumber);
                 outputStream.flush();
                 waitForAuctionHouse();
             } catch (IOException e) {
-                e.printStackTrace();
-            }
-
+            e.printStackTrace();
         }
+
     }
 
     public void waitForAuctionHouse() throws IOException {
-        clientMessage = "";
-        while(!clientMessage.equals("terminate")){
-            try{
-                clientMessage = inputStream.readUTF();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        clientMessage = inputStream.readUTF();
+        switch(clientMessage){
+            case "balance":
+                outputStream.writeUTF("Your balance is "+ auctionHouse.getBalance());
+                break;
+            case "terminate":
+                outputStream.writeUTF("Your program is terminating");
+                break;
+            default:
+                waitForAuctionHouse();
         }
 
 
 
         if(clientMessage.equals("terminate")){
             outputStream.close();
+            inputStream.close();
             serverClient.close();
         }
     }

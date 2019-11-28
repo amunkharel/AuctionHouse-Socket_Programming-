@@ -3,6 +3,8 @@ package Bank;
 public class AuctionHouse {
     private String hostname;
     private int port;
+    private int balance = 0;
+
 
     private  int id;
 
@@ -19,5 +21,13 @@ public class AuctionHouse {
 
     public int getPort(){
         return port;
+    }
+
+    public int getBalance(){
+        return balance;
+    }
+
+    public void setBalance(int add){
+        balance += add;
     }
 }

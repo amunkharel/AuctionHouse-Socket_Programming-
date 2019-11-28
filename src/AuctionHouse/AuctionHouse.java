@@ -9,52 +9,134 @@ import java.util.Scanner;
 
 public class AuctionHouse {
 
-    private int portNumber;
     private List<Item> itemList = new ArrayList<Item>();
+
+    private  DataInputStream inputStream = null;
+    private DataOutputStream outputStream = null;
+    private Socket socket = null;
+    private int balance = 0;
+
     public AuctionHouse() {
     }
 
     public void startServer() {
         try {
-            InetAddress address = InetAddress.getLocalHost(); //take input from user
-            Socket socket = new Socket("127.0.0.1", 8888);
-            DataInputStream inputStream = new DataInputStream(socket.getInputStream());
-            DataOutputStream outputStream = new DataOutputStream(socket.getOutputStream());
-            System.out.println(inputStream.readUTF());
-            System.out.println("\nType in your port number : ");
+
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-            String readString  = br.readLine();
-            if(isInteger(readString)){
-                portNumber = Integer.parseInt(readString);
+            System.out.println("Type Bank Host Name: ");
+            String bankHostNumber = br.readLine();
+
+            String bankPortNumber = "";
+            boolean isLegal = false;
+            while(!isLegal){
+                System.out.println("Type Bank's port number: ");
+                bankPortNumber = br.readLine();
+                if(isInteger(bankPortNumber)){
+                    isLegal = true;
+                }
             }
 
-            //AuctionServer auctionServer = new AuctionServer(portNumber, address.getHostAddress());
-            //auctionServer.run();
-            Thread threadServer = new Thread(new AuctionServer(portNumber,"127.0.0.1"));
+            System.out.println("Type Your Host Name: ");
+            String auctionHostNumber = br.readLine();
+
+            String auctionPortNumber = "";
+            boolean isLegalPort = false;
+            while(!isLegalPort){
+                System.out.println("Type Auction's port number: ");
+                auctionPortNumber = br.readLine();
+                if(isInteger(auctionPortNumber)){
+                    isLegalPort = true;
+                }
+            }
+
+            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),"127.0.0.1"));
             threadServer.start();
 
+            socket = new Socket("127.0.0.1", 8888);
+            inputStream = new DataInputStream(socket.getInputStream());
+            outputStream = new DataOutputStream(socket.getOutputStream());
+            System.out.println(inputStream.readUTF());
 
 
-            System.out.println("Hello World");
+
             String clientMessage = "", serverMessage = "";
             setItem();
-            boolean runServer = true;
-            while (!clientMessage.equals("terminate")) {
-                outputStream.writeUTF("h " + "127.0.0.1" + " "+ portNumber);
-                outputStream.flush();
-//                if(runServer) {
-//                    runServer= false;
-//                    //auctionServer.run();
-//
-//                }
-                serverMessage = inputStream.readUTF();
-                System.out.println(serverMessage);
-            }
+
+            outputStream.writeUTF("h " + "127.0.0.1" + " "+ auctionPortNumber);
+            outputStream.flush();
+
+            serverMessage = inputStream.readUTF();
+            System.out.println(serverMessage);
+
+            menu();
 
 
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.toString());
+        }
+
+    }
+
+
+    public void menu() {
+
+        String menuInput = "";
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Menu \n 1) Type '1' to check balance \n " +
+                "2) Type '2' to terminate the program");
+
+        try {
+             menuInput = br.readLine();
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
+
+        switch (menuInput) {
+            case "1":
+                try {
+                    outputStream.writeUTF("balance");
+                    outputStream.flush();
+                    System.out.println(inputStream.readUTF());
+                } catch (IOException e) {
+                    System.out.println(e.toString());
+                }
+                menu();
+                break;
+
+            case "2":
+                try {
+                    //boolean condition, check if any item is currently on bidding.
+                    outputStream.writeUTF("terminate");
+                    outputStream.flush();
+                    try {
+                        outputStream.close();
+                        inputStream.close();
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
+                } catch (IOException e) {
+                    System.out.println(e.toString());
+
+                }
+                exitProgram();
+                break;
+
+            default:
+                menu();
+        }
+
+
+    }
+
+    public void exitProgram() {
+        System.out.println("sending message, closing the account");
+        try {
+            socket.close();
+            inputStream.close();
+            outputStream.close();
+        } catch (IOException e) {
+            System.out.println(e.toString());
         }
 
     }
@@ -74,4 +156,6 @@ public class AuctionHouse {
         }
         return true;
     }
+
+
 }
