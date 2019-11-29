@@ -33,7 +33,7 @@ public class BankClientThread extends Thread {
         try {
             inputStream = new DataInputStream(serverClient.getInputStream());
             outputStream = new DataOutputStream(serverClient.getOutputStream());
-            serverMessage = "You are now connected to bank server.";
+            serverMessage = clientNumber + " You are now connected to bank server.";
             outputStream.writeUTF(serverMessage);
             outputStream.flush();
             clientMessage = inputStream.readUTF();
@@ -71,7 +71,7 @@ public class BankClientThread extends Thread {
                 outputStream.flush();
                 waitForAuctionHouse();
             } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.toString());
         }
 
     }
@@ -106,7 +106,7 @@ public class BankClientThread extends Thread {
             System.out.println("Agent got registered in Bank");
             waitForAgent();
         } catch (IOException e){
-            e.printStackTrace();
+            System.out.println(e.toString());
         }
 
     }

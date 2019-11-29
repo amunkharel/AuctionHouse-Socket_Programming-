@@ -1,6 +1,7 @@
 package Agent;
 
 import java.io.*;
+import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
 
@@ -16,6 +17,7 @@ public class Agent {
 
     private DataOutputStream auctionOutputStream = null;
 
+    private int agentNumber = 0;
     private int currentAuctionPort;
     private String currentAuctionHost;
     private String[] auctionList;
@@ -56,6 +58,16 @@ public class Agent {
             outputStream.flush();
             serverMessage = inputStream.readUTF();
             System.out.println(serverMessage);
+            int i = 0;
+            String number = "";
+
+            while (serverMessage.charAt(i) != ' ' ) {
+                number = number + serverMessage.charAt(i);
+                i++;
+            }
+
+            agentNumber = Integer.parseInt(number);
+
             menu();
 
 
@@ -161,10 +173,9 @@ public class Agent {
             auctionSocket =new Socket(hostNumber,portNumber);
             auctionInputStream =new DataInputStream(auctionSocket.getInputStream());
             auctionOutputStream =new DataOutputStream(auctionSocket.getOutputStream());
-            BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
             String clientMessage="",serverMessage="";
 
-            clientMessage = "Hello Auction Server";
+            clientMessage = agentNumber + " Agent Present";
 
             auctionOutputStream.writeUTF(clientMessage);
 
@@ -172,11 +183,73 @@ public class Agent {
 
             System.out.println(serverMessage);
 
+            singleAuctionHouseMenu();
+
             auctionInputStream.close();
             auctionOutputStream.close();
             auctionSocket.close();
         }catch(Exception e){
             System.out.println(e);
+        }
+    }
+
+    public void singleAuctionHouseMenu() {
+        String agentInput = "";
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("1) Please Type 1 to get list of items \n" +
+                "2) Please type 2 to go back to previous menu");
+        try {
+             agentInput = br.readLine();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        switch(agentInput){
+            case "1":
+                try {
+                    auctionOutputStream.writeUTF("ItemList");
+                    String[] strArr = auctionInputStream.readUTF().split(" ");
+                    bidMenu(strArr);
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            case "2":
+                return;
+        }
+    }
+
+    public void bidMenu(String[] arr){
+        System.out.println("Item list are given below: ");
+        for (int i = 0; i<arr.length && arr.length>1;i+=2){
+            System.out.println((i/2+1) + "." +arr[i] + " has bid amount "+arr[i+1]);
+        }
+        String itemNumber = "";
+        String amountBid = "";
+        BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+        boolean isValid = false;
+        while(!isValid){
+            System.out.println("Type in the Item number :\nOr Type 'b' to go back:");
+            try {
+                 itemNumber = br.readLine();
+            } catch (IOException e) {
+                System.out.println(e.toString());
+            }
+            if(itemNumber.equals("1")||itemNumber.equals("2")||itemNumber.equals("3")) {
+                System.out.println("Type in the bid amount :\nOr Type 'b' to go back:");
+                try {
+                    amountBid = br.readLine();
+                } catch (IOException e) {
+                    System.out.println(e.toString());
+                }
+                if (isInteger(amountBid)) {
+                    isValid = true;
+                } else if (itemNumber.equals("b")) {
+                    return;
+                }
+            }
+            else if (itemNumber.equals("b")) {
+                return;
+            }
         }
     }
 

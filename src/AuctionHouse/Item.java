@@ -9,6 +9,7 @@ public class Item {
     public Item(String name, double minBid){
         this.name = name;
         this.minBid = minBid;
+
     }
 
     public String getName(){
@@ -19,11 +20,5 @@ public class Item {
         return minBid;
     }
 
-    public void setCurrentBid(double bid){
-        currentBid = bid;
-    }
 
-    public double getCurrentBid(){
-        return currentBid;
-    }
 }

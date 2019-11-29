@@ -17,9 +17,14 @@ public class AuctionClientThread implements Runnable{
     private String serverMessage = "";
     private List<Item> itemList = new ArrayList<Item>();
 
+    private static List<Agent> agents = new ArrayList<Agent>();
+
+    private int agentNumber;
+
     public  AuctionClientThread(Socket agentClient,  List<Item> itemList) {
         this.agentClient = agentClient;
         this.itemList = itemList;
+        agentNumber = 0;
     }
     @Override
     public void run() {
@@ -35,10 +40,56 @@ public class AuctionClientThread implements Runnable{
             outputStream.flush();
             clientMessage = inputStream.readUTF();
 
-            System.out.println(clientMessage);
+            int i = 0;
+            String number = "";
+
+            while (clientMessage.charAt(i) != ' ' ) {
+                number = number + clientMessage.charAt(i);
+                i++;
+            }
+
+            agentNumber = Integer.parseInt(number);
+
+            agents.add(new Agent(agentClient, agentNumber));
+
+
+            waitForAgent();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.toString());
         }
+    }
+
+    public void waitForAgent() {
+        try {
+            clientMessage = inputStream.readUTF();
+
+            switch(clientMessage){
+                case "ItemList":
+                    serverMessage = "";
+                    for(int i = 0; i<3 && i <itemList.size(); i++){
+
+                        serverMessage += " "+itemList.get(i).getName() + " "+itemList.get(i).getMinBid();
+                        if(i == 0){
+                            serverMessage = serverMessage.replaceFirst(" ", "");
+                        }
+                    }
+                    outputStream.writeUTF(serverMessage);
+
+                    waitForAgent();
+                    break;
+                default:
+                    waitForAgent();
+            }
+            if(clientMessage.equals("terminate")){
+                outputStream.close();
+                inputStream.close();
+                agentClient.close();
+            }
+
+        } catch (IOException e) {
+            System.out.println(e.toString());
+        }
+
     }
 }
