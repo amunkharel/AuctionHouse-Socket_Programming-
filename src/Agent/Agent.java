@@ -6,9 +6,16 @@ import java.util.Scanner;
 
 public class Agent {
 
-    Socket bankSocket = null;
-    DataInputStream inputStream = null;
-    DataOutputStream outputStream = null;
+    private Socket bankSocket = null;
+    private DataInputStream inputStream = null;
+    private DataOutputStream outputStream = null;
+
+    private Socket auctionSocket = null;
+
+    private DataInputStream auctionInputStream = null;
+
+    private DataOutputStream auctionOutputStream = null;
+
     private int currentAuctionPort;
     private String currentAuctionHost;
     private String[] auctionList;
@@ -123,7 +130,7 @@ public class Agent {
         boolean isHouse = false;
         int houseNumber =0;
         while(!isHouse){
-            System.out.println("Type in the House Number : ");
+            System.out.println("Type in the House Number :\n Type 'b' to go back");
             try {
                 menuInput = br.readLine();
             } catch (IOException e) {
@@ -134,6 +141,9 @@ public class Agent {
                 if(houseNumber>=0 && houseNumber<auctionList.length/3){
                     isHouse = true;
                 }
+            }
+            else if (menuInput.equals("b")) {
+                return;
             }
         }
         connectToAuctionHouse(auctionList[houseNumber*3+1],Integer.parseInt(auctionList[houseNumber*3+2]));
@@ -147,28 +157,27 @@ public class Agent {
     public void connectToAuctionHouse(String hostNumber, int portNumber) {
 
         System.out.println("from agent:::  hostnumber =" + hostNumber+ " portNumber = "+ portNumber);
-//        try{
-//            Socket socket=new Socket(hostNumber,portNumber);
-//            DataInputStream inStream=new DataInputStream(socket.getInputStream());
-//            DataOutputStream outStream=new DataOutputStream(socket.getOutputStream());
-//            BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-//            String clientMessage="",serverMessage="";
+        try{
+            auctionSocket =new Socket(hostNumber,portNumber);
+            auctionInputStream =new DataInputStream(auctionSocket.getInputStream());
+            auctionOutputStream =new DataOutputStream(auctionSocket.getOutputStream());
+            BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
+            String clientMessage="",serverMessage="";
 
-//            while(!clientMessage.equals("terminate")){
-//                serverMessage=inStream.readUTF();
-//                System.out.println(serverMessage);
-//
-//                clientMessage=br.readLine();
-//                outStream.writeUTF(clientMessage);
-//                outStream.flush();
-//
-//            }
-//            outStream.close();
-//            outStream.close();
-//            socket.close();
-//        }catch(Exception e){
-//            System.out.println(e);
-//        }
+            clientMessage = "Hello Auction Server";
+
+            auctionOutputStream.writeUTF(clientMessage);
+
+            serverMessage = auctionInputStream.readUTF();
+
+            System.out.println(serverMessage);
+
+            auctionInputStream.close();
+            auctionOutputStream.close();
+            auctionSocket.close();
+        }catch(Exception e){
+            System.out.println(e);
+        }
     }
 
     public boolean isInteger(String str){

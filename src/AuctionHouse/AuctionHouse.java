@@ -25,6 +25,7 @@ public class AuctionHouse {
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Type Bank Host Name: ");
             String bankHostNumber = br.readLine();
+            setItem();
 
             String bankPortNumber = "";
             boolean isLegal = false;
@@ -49,7 +50,7 @@ public class AuctionHouse {
                 }
             }
 
-            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),"127.0.0.1"));
+            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),"127.0.0.1", itemList));
             threadServer.start();
 
             socket = new Socket("127.0.0.1", 8888);
@@ -60,7 +61,7 @@ public class AuctionHouse {
 
 
             String clientMessage = "", serverMessage = "";
-            setItem();
+
 
             outputStream.writeUTF("h " + "127.0.0.1" + " "+ auctionPortNumber);
             outputStream.flush();
@@ -83,8 +84,7 @@ public class AuctionHouse {
 
         String menuInput = "";
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Menu \n 1) Type '1' to check balance \n " +
-                "2) Type '2' to terminate the program");
+        System.out.println("Menu\n1) Type '1' to check balance \n" +"2) Type '2' to terminate the program");
 
         try {
              menuInput = br.readLine();
@@ -144,6 +144,9 @@ public class AuctionHouse {
     public void setItem(){
         itemList.add(new Item("microwave", 10));
         itemList.add(new Item("Freezer", 200));
+        itemList.add(new Item("Game", 50));
+        itemList.add(new Item("Paper Towel", 23));
+        itemList.add(new Item("Laptop", 23));
     }
 
     public boolean isInteger(String str){
