@@ -142,7 +142,7 @@ public class Agent {
         boolean isHouse = false;
         int houseNumber =0;
         while(!isHouse){
-            System.out.println("Type in the House Number :\n Type 'b' to go back");
+            System.out.println("Type in the House Number :\nType 'b' to go back");
             try {
                 menuInput = br.readLine();
             } catch (IOException e) {
@@ -196,7 +196,7 @@ public class Agent {
     public void singleAuctionHouseMenu() {
         String agentInput = "";
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("1) Please Type 1 to get list of items \n" +
+        System.out.println("1) Please Type 1 to get list of items\n" +
                 "2) Please type 2 to go back to previous menu");
         try {
              agentInput = br.readLine();
@@ -215,7 +215,11 @@ public class Agent {
                 }
             case "2":
                 return;
+            default:
+                break;
+
         }
+
     }
 
     public void bidMenu(String[] arr){
@@ -244,14 +248,40 @@ public class Agent {
                 if (isInteger(amountBid)) {
                     isValid = true;
                 } else if (itemNumber.equals("b")) {
-                    return;
+                    try {
+                        auctionOutputStream.writeUTF("b");
+                        outputStream.flush();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                    bidMenu(arr);
+                } else {
+                    System.out.println("Invalid input is given");
+                    bidMenu(arr);
                 }
             }
             else if (itemNumber.equals("b")) {
-                return;
+                try {
+                    auctionOutputStream.writeUTF("b");
+                    outputStream.flush();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                singleAuctionHouseMenu();
             }
         }
+
+        try {
+            auctionOutputStream.writeUTF(""+ itemNumber+ " "+amountBid);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        System.out.println("bid is sent out to AH");
+
+
     }
+
+
 
     public boolean isInteger(String str){
         try{

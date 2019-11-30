@@ -62,7 +62,9 @@ public class AuctionClientThread implements Runnable{
 
     public void waitForAgent() {
         try {
+            System.out.println("waiting for agent input");
             clientMessage = inputStream.readUTF();
+            System.out.println("what i am reading here : "+ clientMessage);
 
             switch(clientMessage){
                 case "ItemList":
@@ -75,17 +77,21 @@ public class AuctionClientThread implements Runnable{
                         }
                     }
                     outputStream.writeUTF(serverMessage);
-
-                    waitForAgent();
+                    outputStream.flush();
+                    break;
+                case "b":
+                    System.out.println("back is performed");
                     break;
                 default:
-                    waitForAgent();
+                    System.out.println("this is client message "+clientMessage);
+                    break;
             }
             if(clientMessage.equals("terminate")){
                 outputStream.close();
                 inputStream.close();
                 agentClient.close();
             }
+            waitForAgent();
 
         } catch (IOException e) {
             System.out.println(e.toString());
