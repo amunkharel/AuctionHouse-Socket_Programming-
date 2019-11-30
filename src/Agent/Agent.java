@@ -214,7 +214,12 @@ public class Agent {
                     e.printStackTrace();
                 }
             case "2":
-                return;
+                try {
+                    auctionOutputStream.writeUTF("Terminate");
+                    menu();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             default:
                 break;
 
@@ -247,10 +252,10 @@ public class Agent {
                 }
                 if (isInteger(amountBid)) {
                     isValid = true;
-                } else if (itemNumber.equals("b")) {
+                } else if (amountBid.equals("b")) {
                     try {
                         auctionOutputStream.writeUTF("b");
-                        outputStream.flush();
+                        auctionOutputStream.flush();
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -263,7 +268,7 @@ public class Agent {
             else if (itemNumber.equals("b")) {
                 try {
                     auctionOutputStream.writeUTF("b");
-                    outputStream.flush();
+                    auctionOutputStream.flush();
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
@@ -272,12 +277,30 @@ public class Agent {
         }
 
         try {
-            auctionOutputStream.writeUTF(""+ itemNumber+ " "+amountBid);
+            auctionOutputStream.writeUTF( itemNumber+ " "+amountBid);
+            auctionOutputStream.flush();
+            auctionResponse();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.print(e.toString());
         }
         System.out.println("bid is sent out to AH");
 
+
+    }
+
+    public void auctionResponse(){
+        try {
+            String serverMessage = auctionInputStream.readUTF();
+
+            switch (serverMessage) {
+                case "fail":
+                    System.out.println("Your bid was rejected");
+                    menu();
+                    break;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
     }
 

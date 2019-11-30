@@ -82,8 +82,12 @@ public class AuctionClientThread implements Runnable{
                 case "b":
                     System.out.println("back is performed");
                     break;
+                case "Terminate":
+                    removeCurrentAgent();
                 default:
                     System.out.println("this is client message "+clientMessage);
+
+                    checkBidMenu(clientMessage);
                     break;
             }
             if(clientMessage.equals("terminate")){
@@ -97,5 +101,40 @@ public class AuctionClientThread implements Runnable{
             System.out.println(e.toString());
         }
 
+    }
+
+    public void checkBidMenu(String message) {
+        int itemLocation = Integer.parseInt(message.split(" ")[0]);
+        int itemBid = Integer.parseInt(message.split(" ")[1]);
+
+        if(itemList.get(itemLocation - 1).getMinBid() > itemBid) {
+            try {
+                outputStream.writeUTF("fail");
+                outputStream.flush();
+                removeCurrentAgent();
+
+
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+    }
+
+    public void removeCurrentAgent() {
+        System.out.println("size of agentlist  = "+agents.size());
+        for (int i = 0; i < agents.size(); i ++) {
+            if(agents.get(i).getAgentId() == agentNumber) {
+                agents.remove(i);
+            }
+        }
+
+        System.out.println("size of agentlist  = "+agents.size());
+        for(int i = 0; i < agents.size(); i++) {
+            System.out.println(agents.get(i).getAgentId());
+        }
+
+        Thread.currentThread().stop();
     }
 }
