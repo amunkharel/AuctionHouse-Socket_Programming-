@@ -13,18 +13,25 @@ public class AuctionClientThread implements Runnable{
 
     private DataInputStream inputStream = null;
     private DataOutputStream outputStream = null;
+
+    private DataInputStream bankInputStream = null;
+    private DataOutputStream bankOutputStream = null;
+
     private String clientMessage = "";
     private String serverMessage = "";
     private List<Item> itemList = new ArrayList<Item>();
+    private Socket bankSocket = null;
 
     private static List<Agent> agents = new ArrayList<Agent>();
 
     private int agentNumber;
 
-    public  AuctionClientThread(Socket agentClient,  List<Item> itemList) {
+    public  AuctionClientThread(Socket agentClient,  List<Item> itemList, Socket bankSocket) {
         this.agentClient = agentClient;
         this.itemList = itemList;
+        this.bankSocket = bankSocket;
         agentNumber = 0;
+
     }
     @Override
     public void run() {
@@ -32,6 +39,9 @@ public class AuctionClientThread implements Runnable{
 
             inputStream = new DataInputStream(agentClient.getInputStream());
             outputStream = new DataOutputStream(agentClient.getOutputStream());
+
+            bankInputStream = new DataInputStream(bankSocket.getInputStream());
+            bankOutputStream = new DataOutputStream(bankSocket.getOutputStream());
 
             serverMessage = "You are now connected with Auction House";
 
@@ -104,35 +114,74 @@ public class AuctionClientThread implements Runnable{
     }
 
     public void checkBidMenu(String message) {
+        int agentId = 0;
+        Agent agent = null;
+
+        DataInputStream agentInputStream = null;
+
+        DataOutputStream agentOutputStream = null;
+
+        Socket agentSocket = null;
         int itemLocation = Integer.parseInt(message.split(" ")[0]);
-        int itemBid = Integer.parseInt(message.split(" ")[1]);
+        int itemBidAmount = Integer.parseInt(message.split(" ")[1]);
 
-        if(itemList.get(itemLocation - 1).getMinBid() > itemBid) {
-            try {
-                outputStream.writeUTF("fail");
-                outputStream.flush();
-                removeCurrentAgent();
+        try {
+            if(itemList.get(itemLocation - 1).getMinBid() > itemBidAmount) {
 
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
+                    outputStream.writeUTF("fail");
+                    outputStream.flush();
+                    removeCurrentAgent();
             }
+
+            else {
+                bankOutputStream.writeUTF("checkAgentAmount "+agentNumber);
+                int agentBalance = Integer.parseInt(bankInputStream.readUTF());
+                if(agentBalance>=itemBidAmount){
+                    System.out.println("agent has this balance "+ agentBalance);
+                    System.out.println("agent has enough amount");
+                    System.out.println("this is last agent id "+ itemList.get(itemLocation).getAgentWithBid());
+                    if(!(itemList.get(itemLocation-1).getAgentWithBid()==-1)){
+                        System.out.println("this should be printed ");
+                        agentId = itemList.get(itemLocation - 1).getAgentWithBid();
+                        System.out.println("this is previous agent id " + agentId);
+                        for (int i = 0; i < agents.size(); i ++) {
+                            if(agents.get(i).getAgentId() == agentId) {
+                                agent = agents.get(i);
+                            }
+                        }
+                        agentSocket = agent.getAgentClient();
+
+                        agentInputStream = new DataInputStream(agentSocket.getInputStream());
+                        agentOutputStream = new DataOutputStream(agentSocket.getOutputStream());
+
+                        agentOutputStream.writeUTF("Hello World!!!!!");
+
+
+                        //send message to agent with id itemList.get(itemLocation).getAgentWithBid()
+
+                    }
+                    itemList.get(itemLocation - 1).setMinBid(itemBidAmount, agentNumber);
+                    outputStream.writeUTF("pass");
+                    outputStream.flush();
+                } else{
+                    System.out.println("agent does not have enough amount");
+                }
+                bankOutputStream.flush();
+
+            }
+        }
+
+        catch (IOException e) {
+            e.printStackTrace();
         }
 
     }
 
     public void removeCurrentAgent() {
-        System.out.println("size of agentlist  = "+agents.size());
         for (int i = 0; i < agents.size(); i ++) {
             if(agents.get(i).getAgentId() == agentNumber) {
                 agents.remove(i);
             }
-        }
-
-        System.out.println("size of agentlist  = "+agents.size());
-        for(int i = 0; i < agents.size(); i++) {
-            System.out.println(agents.get(i).getAgentId());
         }
 
         Thread.currentThread().stop();

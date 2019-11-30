@@ -50,13 +50,15 @@ public class AuctionHouse {
                 }
             }
 
-            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),"127.0.0.1", itemList));
-            threadServer.start();
+
 
             socket = new Socket("127.0.0.1", 8888);
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
             System.out.println(inputStream.readUTF());
+
+            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),"127.0.0.1", itemList, socket));
+            threadServer.start();
 
 
 

@@ -277,7 +277,7 @@ public class Agent {
         }
 
         try {
-            auctionOutputStream.writeUTF( itemNumber+ " "+amountBid);
+            auctionOutputStream.writeUTF( itemNumber+ " "+amountBid );
             auctionOutputStream.flush();
             auctionResponse();
         } catch (IOException e) {
@@ -297,10 +297,17 @@ public class Agent {
                     System.out.println("Your bid was rejected");
                     menu();
                     break;
+                case "pass":
+                    System.out.println("Your bid was passed");
+                    serverMessage = auctionInputStream.readUTF();
+                    System.out.println("This is message we got "+ serverMessage);
+                    break;
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+
+
 
     }
 

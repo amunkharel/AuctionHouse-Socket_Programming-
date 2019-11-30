@@ -20,5 +20,8 @@ public class Agent {
         return amount;
     }
 
+    public int getId(){
+        return id;
+    }
 
 }

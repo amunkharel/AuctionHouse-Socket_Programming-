@@ -77,7 +77,16 @@ public class BankClientThread extends Thread {
     }
 
     public void waitForAuctionHouse() throws IOException {
+        int agentNumber = -1;
         clientMessage = inputStream.readUTF();
+        if(clientMessage.contains("checkAgentAmount")){
+            agentNumber = Integer.parseInt(clientMessage.split(" ")[1]);
+            for(int i = 0; i<agents.size(); i++){
+                if(agents.get(i).getId()==agentNumber){
+                    outputStream.writeUTF(""+agents.get(i).getAmount());
+                }
+            }
+        }
         switch(clientMessage){
             case "balance":
                 outputStream.writeUTF("Your balance is "+ auctionHouse.getBalance());
@@ -86,6 +95,7 @@ public class BankClientThread extends Thread {
             case "terminate":
                 outputStream.writeUTF("Your program is terminating");
                 break;
+
             default:
                 waitForAuctionHouse();
         }
@@ -121,6 +131,7 @@ public class BankClientThread extends Thread {
                 break;
             case "balance":
                 outputStream.writeUTF(""+agent.getAmount());
+                waitForAgent();
                 break;
         }
         if(clientMessage.equals("terminate")){
