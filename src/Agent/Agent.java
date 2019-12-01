@@ -3,6 +3,7 @@ package Agent;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class Agent {
@@ -81,7 +82,7 @@ public class Agent {
     public void menu() {
         String menuInput = "";
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Menu\n1) Type '1' to get list of Auction Houses \n " +
+        System.out.println("Menu\n1) Type '1' to get list of Auction Houses \n" +
                 "2) Type '2' to check balance \n" +
                 "3) Type '3' to close the account");
         try {
@@ -95,16 +96,29 @@ public class Agent {
                 try {
                     outputStream.writeUTF("ListAuctionHouse");
                     outputStream.flush();
+                    String arr = inputStream.readUTF();
+                    System.out.println("this is the arr :::::::::::::"+ arr);
+                    auctionList = arr.split(" ");
 
-                    auctionList = inputStream.readUTF().split(" ");
                     auctionHouseMenu();
                 } catch (IOException e) {
                     System.out.println(e.toString());
                 }
                 menu();
                 break;
-
             case "2":
+                try {
+                    outputStream.writeUTF("CheckBalance");
+                    outputStream.flush();
+                    String bankMessage = inputStream.readUTF();
+                    System.out.println(bankMessage);
+                    menu();
+                } catch (IOException e) {
+                    System.out.println(e.toString());
+                }
+                menu();
+                break;
+            case "3":
                 try {
                     //boolean condition, check if any item is currently on bidding.
                     outputStream.writeUTF("terminate");

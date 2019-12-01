@@ -79,6 +79,31 @@ public class BankClientThread extends Thread {
     public void waitForAuctionHouse() throws IOException {
         int agentNumber = -1;
         clientMessage = inputStream.readUTF();
+        System.out.println(clientMessage);
+        int takeBalanceFromAgentID = -1;
+        int deposittoAuctionID = -1;
+        int amountSold = -1;
+
+        if(clientMessage.contains("Sold")){
+            String[] strArr = clientMessage.split(" ");
+            takeBalanceFromAgentID = Integer.parseInt(strArr[1]);
+            deposittoAuctionID = Integer.parseInt(strArr[2]);
+            amountSold = Integer.parseInt(strArr[3]);
+            for(int i = 0 ; i<agents.size(); i++){
+                if(agents.get(i).getId()== takeBalanceFromAgentID){
+                    agents.get(i).subtract(amountSold);
+                }
+            }
+            for(int i = 0 ; i<allHouses.size(); i++){
+                if(allHouses.get(i).getId()== deposittoAuctionID){
+                    allHouses.get(i).addBalance(amountSold);
+                }
+            }
+
+
+        }
+
+
         if(clientMessage.contains("checkAgentAmount")){
             agentNumber = Integer.parseInt(clientMessage.split(" ")[1]);
             for(int i = 0; i<agents.size(); i++){
@@ -129,8 +154,8 @@ public class BankClientThread extends Thread {
                 outputStream.flush();
                 waitForAgent();
                 break;
-            case "balance":
-                outputStream.writeUTF(""+agent.getAmount());
+            case "CheckBalance":
+                outputStream.writeUTF("Your balance is "+agent.getAmount());
                 waitForAgent();
                 break;
         }
@@ -143,7 +168,7 @@ public class BankClientThread extends Thread {
     public String auctionInformation(){
         String str="";
         for(int i =0; i <allHouses.size();i ++){
-            str += allHouses.get(i).getId() + " " +allHouses.get(i).getHostname() + " "+allHouses.get(i).getPort();
+            str += allHouses.get(i).getId() + " " +allHouses.get(i).getHostname() + " "+allHouses.get(i).getPort()+" ";
         }
         System.out.println("bank has this information "+ str);
         return str;

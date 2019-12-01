@@ -16,6 +16,9 @@ public class Agent {
         this.name = name;
     }
 
+    public void subtract(int price){
+        amount = amount -price;
+    }
     public int getAmount(){
         return amount;
     }

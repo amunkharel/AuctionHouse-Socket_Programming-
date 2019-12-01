@@ -31,7 +31,7 @@ public class AuctionHouse {
         return id;
     }
 
-    public void setBalance(int add){
+    public void addBalance(int add){
         balance += add;
     }
 }
