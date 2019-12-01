@@ -1,5 +1,6 @@
 package AuctionHouse;
 
+import java.io.IOException;
 import java.net.Socket;
 
 public class Agent {
@@ -20,5 +21,13 @@ public class Agent {
 
     public int getAgentId() {
         return agentId;
+    }
+
+    public void closeSocket() {
+        try {
+            agentClient.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

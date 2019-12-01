@@ -147,7 +147,7 @@ public class AuctionHouse {
         itemList.add(new Item("microwave", 10));
         itemList.add(new Item("Freezer", 200));
         itemList.add(new Item("Game", 50));
-        itemList.add(new Item("Paper Towel", 23));
+        itemList.add(new Item("Paper_Towel", 23));
         itemList.add(new Item("Laptop", 23));
     }
 

@@ -6,10 +6,18 @@ import java.io.IOException;
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class AuctionClientThread implements Runnable{
 
     private Socket agentClient = null;
+
+    private static int secondsPassed = 0;
+
+    private static boolean timerRunning = true;
+
+    private int itemLocation = -1;
 
     private DataInputStream inputStream = null;
     private DataOutputStream outputStream = null;
@@ -122,7 +130,7 @@ public class AuctionClientThread implements Runnable{
         DataOutputStream agentOutputStream = null;
 
         Socket agentSocket = null;
-        int itemLocation = Integer.parseInt(message.split(" ")[0]);
+        itemLocation = Integer.parseInt(message.split(" ")[0]);
         int itemBidAmount = Integer.parseInt(message.split(" ")[1]);
 
         try {
@@ -135,55 +143,109 @@ public class AuctionClientThread implements Runnable{
 
             else {
                 bankOutputStream.writeUTF("checkAgentAmount "+agentNumber);
+                bankOutputStream.flush();
                 int agentBalance = Integer.parseInt(bankInputStream.readUTF());
-                if(agentBalance>=itemBidAmount){
-                    System.out.println("agent has this balance "+ agentBalance);
+                if(agentBalance>=itemBidAmount) {
+                    System.out.println("agent has this balance " + agentBalance);
                     System.out.println("agent has enough amount");
-                    System.out.println("this is last agent id "+ itemList.get(itemLocation).getAgentWithBid());
-                    if(!(itemList.get(itemLocation-1).getAgentWithBid()==-1)){
+                    System.out.println("this is last agent id " + itemList.get(itemLocation-1).getAgentWithBid());
+                    if (!(itemList.get(itemLocation - 1).getAgentWithBid() == -1)) {
+                        timerRunning = false;
+                        secondsPassed = 0;
                         System.out.println("this should be printed ");
                         agentId = itemList.get(itemLocation - 1).getAgentWithBid();
                         System.out.println("this is previous agent id " + agentId);
-                        for (int i = 0; i < agents.size(); i ++) {
-                            if(agents.get(i).getAgentId() == agentId) {
+                        for (int i = 0; i < agents.size(); i++) {
+                            if (agents.get(i).getAgentId() == agentId) {
                                 agent = agents.get(i);
                             }
                         }
+                        itemList.get(itemLocation - 1).setMinBid(itemBidAmount, agentNumber);
                         agentSocket = agent.getAgentClient();
 
                         agentInputStream = new DataInputStream(agentSocket.getInputStream());
                         agentOutputStream = new DataOutputStream(agentSocket.getOutputStream());
 
-                        agentOutputStream.writeUTF("Hello World!!!!!");
+                        agentOutputStream.writeUTF("Your bid was OutBidded.");
+                        Thread.sleep(100);
+                        timerRunning = true;
+                        timerStart();
+
+
 
 
                         //send message to agent with id itemList.get(itemLocation).getAgentWithBid()
 
+                    } else {
+                        System.out.println("here i am 111111111  ");
+                        itemList.get(itemLocation - 1).setMinBid(itemBidAmount, agentNumber);
+                        outputStream.writeUTF("pass");
+                        outputStream.flush();
+                        if (timerRunning) {
+                            timerStart();
+                        }
                     }
-                    itemList.get(itemLocation - 1).setMinBid(itemBidAmount, agentNumber);
-                    outputStream.writeUTF("pass");
+                }else{
+                    outputStream.writeUTF("fail");
                     outputStream.flush();
-                } else{
-                    System.out.println("agent does not have enough amount");
+                    removeCurrentAgent();
                 }
-                bankOutputStream.flush();
 
             }
         }
 
         catch (IOException e) {
             e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
         }
 
     }
 
-    public void removeCurrentAgent() {
+    public void  removeCurrentAgent() {
         for (int i = 0; i < agents.size(); i ++) {
             if(agents.get(i).getAgentId() == agentNumber) {
+                agents.get(i).closeSocket();
                 agents.remove(i);
             }
         }
 
         Thread.currentThread().stop();
+    }
+
+    Timer timerSecond = new Timer();
+    TimerTask task = new TimerTask() {
+        public void run() {
+            secondsPassed++;
+            if(secondsPassed > 20) {
+                setTimeIsOver(true);
+            }
+            if(!timerRunning){
+                timerSecond.cancel();
+            }
+
+            System.out.println("Seconds passed: " + secondsPassed);
+        }
+    };
+
+    public void setTimeIsOver(boolean timeIsOver) {
+        secondsPassed = 0;
+        timerSecond.cancel();
+        String itemName = itemList.get(itemLocation - 1).getName();
+        itemList.remove(itemLocation - 1);
+        try {
+            outputStream.writeUTF("Congratulations!! Bid Successful, You got item " + itemName + ".");
+            outputStream.flush();
+            removeCurrentAgent();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+
+    }
+
+    public void timerStart() {
+        timerSecond.scheduleAtFixedRate(task, 1000, 1000);
     }
 }

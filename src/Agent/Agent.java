@@ -230,7 +230,7 @@ public class Agent {
     public void bidMenu(String[] arr){
         System.out.println("Item list are given below: ");
         for (int i = 0; i<arr.length && arr.length>1;i+=2){
-            System.out.println((i/2+1) + "." +arr[i] + " has bid amount "+arr[i+1]);
+            System.out.println((i/2+1) + ". " +arr[i] + " has bid amount "+arr[i+1]);
         }
         String itemNumber = "";
         String amountBid = "";
@@ -290,6 +290,7 @@ public class Agent {
 
     public void auctionResponse(){
         try {
+            System.out.println("this message should be printed before bid is sent-out");
             String serverMessage = auctionInputStream.readUTF();
 
             switch (serverMessage) {
@@ -298,9 +299,10 @@ public class Agent {
                     menu();
                     break;
                 case "pass":
-                    System.out.println("Your bid was passed");
+                    System.out.println("Waiting for 30 seconds ....");
                     serverMessage = auctionInputStream.readUTF();
-                    System.out.println("This is message we got "+ serverMessage);
+                    System.out.println(serverMessage);
+                    menu();
                     break;
             }
         } catch (IOException e) {
