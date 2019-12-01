@@ -131,7 +131,7 @@ public class AuctionHouse {
                 else {
                     try {
                         //boolean condition, check if any item is currently on bidding.
-                        outputStream.writeUTF("terminate");
+                        outputStream.writeUTF("terminate "+auctionNumber);
                         outputStream.flush();
                         try {
                             outputStream.close();

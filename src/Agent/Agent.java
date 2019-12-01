@@ -121,7 +121,7 @@ public class Agent {
             case "3":
                 try {
                     //boolean condition, check if any item is currently on bidding.
-                    outputStream.writeUTF("terminate");
+                    outputStream.writeUTF("terminate "+ agentNumber);
                     outputStream.flush();
                     try {
                         outputStream.close();

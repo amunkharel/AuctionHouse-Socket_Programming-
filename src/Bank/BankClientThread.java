@@ -103,6 +103,20 @@ public class BankClientThread extends Thread {
 
         }
 
+        if(clientMessage.contains("terminate")){
+
+            String arr[] = clientMessage.split(" ");
+            int removeFromList = Integer.parseInt(arr[1]);
+            for(int i = 0; i< allHouses.size(); i++){
+                if(allHouses.get(i).getId() == removeFromList){
+                    allHouses.remove(i);
+                }
+            }
+            inputStream.close();
+            outputStream.close();
+            serverClient.close();
+        }
+
 
         if(clientMessage.contains("checkAgentAmount")){
             agentNumber = Integer.parseInt(clientMessage.split(" ")[1]);
@@ -124,11 +138,12 @@ public class BankClientThread extends Thread {
             default:
                 waitForAuctionHouse();
         }
-        if(clientMessage.equals("terminate")){
-            outputStream.close();
-            inputStream.close();
-            serverClient.close();
-        }
+//        if(clientMessage.equals("terminate")){
+//            outputStream.close();
+//            inputStream.close();
+//            serverClient.close();
+//        }
+
     }
 
 
@@ -159,7 +174,14 @@ public class BankClientThread extends Thread {
                 waitForAgent();
                 break;
         }
-        if(clientMessage.equals("terminate")){
+
+        if(clientMessage.contains("terminate")) {
+            for (int i = 0; i < agents.size(); i++) {
+                if (agents.get(i).getId() == Integer.parseInt(clientMessage.split(" ")[1])) {
+                    agents.remove(i);
+                }
+            }
+            inputStream.close();
             outputStream.close();
             serverClient.close();
         }
