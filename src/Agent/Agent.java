@@ -277,6 +277,7 @@ public class Agent {
         }
 
         try {
+            System.out.println("here itemnumber is printed "+ itemNumber + " and amount bid");
             auctionOutputStream.writeUTF( itemNumber+ " "+amountBid );
             auctionOutputStream.flush();
             auctionResponse();
@@ -292,7 +293,12 @@ public class Agent {
         try {
             System.out.println("this message should be printed before bid is sent-out");
             String serverMessage = auctionInputStream.readUTF();
+            System.out.println("this is server message :::" +serverMessage);
+            String congratsMessage = serverMessage;
+            if(serverMessage.contains("Congratulations")){
+                serverMessage = "Sold";
 
+            }
             switch (serverMessage) {
                 case "fail":
                     System.out.println("Your bid was rejected");
@@ -304,6 +310,8 @@ public class Agent {
                     System.out.println(serverMessage);
                     menu();
                     break;
+                case "Sold":
+                    System.out.println(congratsMessage);
             }
         } catch (IOException e) {
             e.printStackTrace();

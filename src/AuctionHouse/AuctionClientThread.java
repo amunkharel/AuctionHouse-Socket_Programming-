@@ -13,11 +13,15 @@ public class AuctionClientThread implements Runnable{
 
     private Socket agentClient = null;
 
-    private static int secondsPassed = 0;
+    private int secondsPassed = 0;
 
     private static boolean timerRunning = true;
 
     private int itemLocation = -1;
+
+    private boolean killThread = false;
+
+
 
     private DataInputStream inputStream = null;
     private DataOutputStream outputStream = null;
@@ -101,7 +105,7 @@ public class AuctionClientThread implements Runnable{
                     System.out.println("back is performed");
                     break;
                 case "Terminate":
-                    removeCurrentAgent();
+                    //removeCurrentAgent();
                 default:
                     System.out.println("this is client message "+clientMessage);
 
@@ -124,12 +128,16 @@ public class AuctionClientThread implements Runnable{
     public void checkBidMenu(String message) {
         int agentId = 0;
         Agent agent = null;
-
+        if(killThread == true){
+            timerSecond.cancel();
+            Thread.currentThread().stop();
+        }
         DataInputStream agentInputStream = null;
 
         DataOutputStream agentOutputStream = null;
 
         Socket agentSocket = null;
+
         itemLocation = Integer.parseInt(message.split(" ")[0]);
         int itemBidAmount = Integer.parseInt(message.split(" ")[1]);
 
@@ -138,7 +146,7 @@ public class AuctionClientThread implements Runnable{
 
                     outputStream.writeUTF("fail");
                     outputStream.flush();
-                    removeCurrentAgent();
+                   // removeCurrentAgent();
             }
 
             else {
@@ -165,14 +173,10 @@ public class AuctionClientThread implements Runnable{
 
                         agentInputStream = new DataInputStream(agentSocket.getInputStream());
                         agentOutputStream = new DataOutputStream(agentSocket.getOutputStream());
-
                         agentOutputStream.writeUTF("Your bid was OutBidded.");
                         Thread.sleep(100);
                         timerRunning = true;
                         timerStart();
-
-
-
 
                         //send message to agent with id itemList.get(itemLocation).getAgentWithBid()
 
@@ -188,7 +192,7 @@ public class AuctionClientThread implements Runnable{
                 }else{
                     outputStream.writeUTF("fail");
                     outputStream.flush();
-                    removeCurrentAgent();
+                    //removeCurrentAgent();
                 }
 
             }
@@ -205,43 +209,52 @@ public class AuctionClientThread implements Runnable{
     public void  removeCurrentAgent() {
         for (int i = 0; i < agents.size(); i ++) {
             if(agents.get(i).getAgentId() == agentNumber) {
+                System.out.println(agentNumber);
+
                 agents.get(i).closeSocket();
                 agents.remove(i);
+
             }
         }
 
-        Thread.currentThread().stop();
+        //Thread.currentThread().stop();
     }
 
     Timer timerSecond = new Timer();
     TimerTask task = new TimerTask() {
         public void run() {
             secondsPassed++;
-            if(secondsPassed > 20) {
-                setTimeIsOver(true);
-            }
             if(!timerRunning){
                 timerSecond.cancel();
             }
+            if(secondsPassed > 20) {
+                setTimeIsOver();
+                timerSecond.cancel();
+            }
 
-            System.out.println("Seconds passed: " + secondsPassed);
+
+            //System.out.println("Seconds passed: " + secondsPassed);
         }
     };
 
-    public void setTimeIsOver(boolean timeIsOver) {
-        secondsPassed = 0;
-        timerSecond.cancel();
+
+
+    public void setTimeIsOver() {
+        //secondsPassed = 0;
+        System.out.println("timer should be canceled");
+
         String itemName = itemList.get(itemLocation - 1).getName();
         itemList.remove(itemLocation - 1);
         try {
-            outputStream.writeUTF("Congratulations!! Bid Successful, You got item " + itemName + ".");
+            outputStream.writeUTF("Congratulations !! Bid Successful, You got item " + itemName + ".");
             outputStream.flush();
-            removeCurrentAgent();
+            System.out.println("here congratulation is sent to winner.");
+            //removeCurrentAgent();
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-
+        killThread = true;
+        timerSecond.cancel();
 
     }
 
