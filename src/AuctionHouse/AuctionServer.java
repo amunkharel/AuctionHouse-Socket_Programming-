@@ -18,6 +18,8 @@ public class AuctionServer implements Runnable{
 
     private int auctionNumber;
 
+    private static  boolean currentlyBidding = false;
+
     public AuctionServer(int portNumber, String address, List<Item> itemList, Socket bankSocket, int auctionNumber) {
         this.portNumber = portNumber;
         this.address = address;
@@ -50,5 +52,9 @@ public class AuctionServer implements Runnable{
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isCurrentlyBidding() {
+        return AuctionClientThread.isCurrentlyBidding();
     }
 }

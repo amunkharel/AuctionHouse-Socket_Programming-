@@ -23,6 +23,8 @@ public class AuctionClientThread implements Runnable{
 
     private int itemBidAmount = -1;
 
+    private static  boolean currentlyBidding = false;
+
 
 
 
@@ -180,7 +182,7 @@ public class AuctionClientThread implements Runnable{
                         agentInputStream = new DataInputStream(agentSocket.getInputStream());
                         agentOutputStream = new DataOutputStream(agentSocket.getOutputStream());
                         agentOutputStream.writeUTF("Your bid was OutBidded.");
-                        Thread.sleep(100);
+                        Thread.sleep(10000);
                         timerRunning = true;
                         timerStart();
 
@@ -229,6 +231,7 @@ public class AuctionClientThread implements Runnable{
     Timer timerSecond = new Timer();
     TimerTask task = new TimerTask() {
         public void run() {
+            currentlyBidding = true;
             secondsPassed++;
             if(!timerRunning){
                 timerSecond.cancel();
@@ -237,8 +240,6 @@ public class AuctionClientThread implements Runnable{
                 setTimeIsOver();
                 timerSecond.cancel();
             }
-
-
             //System.out.println("Seconds passed: " + secondsPassed);
         }
     };
@@ -254,7 +255,9 @@ public class AuctionClientThread implements Runnable{
         try {
             outputStream.writeUTF("Congratulations !! Bid Successful, You got item " + itemName + ".");
             outputStream.flush();
+            currentlyBidding = false;
             bankOutputStream.writeUTF("Sold "+ agentNumber+ " " + auctionHouseNumber + " " + itemBidAmount );
+
             //removeCurrentAgent();
         } catch (IOException e) {
             e.printStackTrace();
@@ -266,5 +269,9 @@ public class AuctionClientThread implements Runnable{
 
     public void timerStart() {
         timerSecond.scheduleAtFixedRate(task, 1000, 1000);
+    }
+
+    public static boolean isCurrentlyBidding() {
+        return currentlyBidding;
     }
 }

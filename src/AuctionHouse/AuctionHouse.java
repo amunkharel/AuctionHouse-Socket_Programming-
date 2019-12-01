@@ -16,6 +16,8 @@ public class AuctionHouse {
     private Socket socket = null;
     private int balance = 0;
 
+    private boolean isCurrentlyBidding = false;
+
     private int auctionNumber = -1;
 
     public AuctionHouse() {
@@ -120,23 +122,30 @@ public class AuctionHouse {
                 break;
 
             case "2":
-                try {
-                    //boolean condition, check if any item is currently on bidding.
-                    outputStream.writeUTF("terminate");
-                    outputStream.flush();
-                    try {
-                        outputStream.close();
-                        inputStream.close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                } catch (IOException e) {
-                    System.out.println(e.toString());
 
+                if(AuctionServer.isCurrentlyBidding()) {
+                    System.out.println("Bid is in process at the moment");
+                    menu();
                 }
-                exitProgram();
-                break;
 
+                else {
+                    try {
+                        //boolean condition, check if any item is currently on bidding.
+                        outputStream.writeUTF("terminate");
+                        outputStream.flush();
+                        try {
+                            outputStream.close();
+                            inputStream.close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    } catch (IOException e) {
+                        System.out.println(e.toString());
+
+                    }
+                    exitProgram();
+                }
+                break;
             default:
                 menu();
         }
@@ -160,8 +169,18 @@ public class AuctionHouse {
         itemList.add(new Item("microwave", 10));
         itemList.add(new Item("Freezer", 200));
         itemList.add(new Item("Game", 50));
-        itemList.add(new Item("Paper_Towel", 23));
-        itemList.add(new Item("Laptop", 23));
+        itemList.add(new Item("Paper_Towel", 100));
+        itemList.add(new Item("Laptop", 250));
+        itemList.add(new Item("Headphone", 150));
+        itemList.add(new Item("Laptop", 123));
+        itemList.add(new Item("Cup", 500));
+        itemList.add(new Item("Filter", 400));
+        itemList.add(new Item("Ball", 40));
+        itemList.add(new Item("Bottle", 15));
+        itemList.add(new Item("Chair", 50));
+        itemList.add(new Item("Banana", 5));
+        itemList.add(new Item("Sweater", 15));
+        itemList.add(new Item("Coke", 12));
     }
 
     public boolean isInteger(String str){
@@ -174,6 +193,7 @@ public class AuctionHouse {
         }
         return true;
     }
+
 
 
 }
