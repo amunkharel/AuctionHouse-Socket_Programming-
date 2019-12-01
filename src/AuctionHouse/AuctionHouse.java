@@ -60,8 +60,6 @@ public class AuctionHouse {
             Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),"127.0.0.1", itemList, socket));
             threadServer.start();
 
-
-
             String clientMessage = "", serverMessage = "";
 
 

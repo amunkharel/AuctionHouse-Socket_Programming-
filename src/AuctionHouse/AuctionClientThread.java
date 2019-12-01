@@ -23,6 +23,7 @@ public class AuctionClientThread implements Runnable{
 
 
 
+
     private DataInputStream inputStream = null;
     private DataOutputStream outputStream = null;
 
@@ -248,7 +249,7 @@ public class AuctionClientThread implements Runnable{
         try {
             outputStream.writeUTF("Congratulations !! Bid Successful, You got item " + itemName + ".");
             outputStream.flush();
-            System.out.println("here congratulation is sent to winner.");
+            //bankOutputStream.writeUTF("Sold "+ agentNumber+ );
             //removeCurrentAgent();
         } catch (IOException e) {
             e.printStackTrace();
