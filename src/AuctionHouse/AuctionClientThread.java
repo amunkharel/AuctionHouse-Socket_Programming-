@@ -21,6 +21,8 @@ public class AuctionClientThread implements Runnable{
 
     private boolean killThread = false;
 
+    private int itemBidAmount = -1;
+
 
 
 
@@ -39,11 +41,14 @@ public class AuctionClientThread implements Runnable{
 
     private int agentNumber;
 
-    public  AuctionClientThread(Socket agentClient,  List<Item> itemList, Socket bankSocket) {
+    private int auctionHouseNumber;
+
+    public  AuctionClientThread(Socket agentClient,  List<Item> itemList, Socket bankSocket, int auctionHouseNumber) {
         this.agentClient = agentClient;
         this.itemList = itemList;
         this.bankSocket = bankSocket;
         agentNumber = 0;
+        this.auctionHouseNumber = auctionHouseNumber;
 
     }
     @Override
@@ -140,7 +145,7 @@ public class AuctionClientThread implements Runnable{
         Socket agentSocket = null;
 
         itemLocation = Integer.parseInt(message.split(" ")[0]);
-        int itemBidAmount = Integer.parseInt(message.split(" ")[1]);
+        itemBidAmount = Integer.parseInt(message.split(" ")[1]);
 
         try {
             if(itemList.get(itemLocation - 1).getMinBid() > itemBidAmount) {
@@ -249,7 +254,7 @@ public class AuctionClientThread implements Runnable{
         try {
             outputStream.writeUTF("Congratulations !! Bid Successful, You got item " + itemName + ".");
             outputStream.flush();
-            //bankOutputStream.writeUTF("Sold "+ agentNumber+ );
+            bankOutputStream.writeUTF("Sold "+ agentNumber+ " " + auctionHouseNumber + " " + itemBidAmount );
             //removeCurrentAgent();
         } catch (IOException e) {
             e.printStackTrace();

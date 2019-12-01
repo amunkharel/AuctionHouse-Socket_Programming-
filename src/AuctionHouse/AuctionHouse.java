@@ -16,6 +16,8 @@ public class AuctionHouse {
     private Socket socket = null;
     private int balance = 0;
 
+    private int auctionNumber = -1;
+
     public AuctionHouse() {
     }
 
@@ -55,9 +57,22 @@ public class AuctionHouse {
             socket = new Socket("127.0.0.1", 8888);
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
-            System.out.println(inputStream.readUTF());
 
-            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),"127.0.0.1", itemList, socket));
+            int a = 0;
+            String intialMessage = inputStream.readUTF();
+            System.out.println(intialMessage);
+
+            String number = "";
+
+            while (intialMessage.charAt(a) != ' ' ) {
+                number = number + intialMessage.charAt(a);
+                a++;
+            }
+
+            auctionNumber = Integer.parseInt(number);
+
+
+            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),"127.0.0.1", itemList, socket, auctionNumber));
             threadServer.start();
 
             String clientMessage = "", serverMessage = "";

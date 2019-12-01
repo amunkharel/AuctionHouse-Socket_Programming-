@@ -16,11 +16,14 @@ public class AuctionServer implements Runnable{
 
     private List<Item> itemList = new ArrayList<Item>();
 
-    public AuctionServer(int portNumber, String address, List<Item> itemList, Socket bankSocket) {
+    private int auctionNumber;
+
+    public AuctionServer(int portNumber, String address, List<Item> itemList, Socket bankSocket, int auctionNumber) {
         this.portNumber = portNumber;
         this.address = address;
         this.itemList = itemList;
         this.bankSocket = bankSocket;
+        this.auctionNumber = auctionNumber;
     }
 
 
@@ -38,7 +41,7 @@ public class AuctionServer implements Runnable{
             while (true) {
                 Socket serverClient = serverSocket.accept(); //accept client side
                 Thread threadAuctionClientThread = new Thread(new AuctionClientThread(serverClient,
-                        itemList, bankSocket));
+                        itemList, bankSocket, auctionNumber));
                 threadAuctionClientThread.start();
 
 
