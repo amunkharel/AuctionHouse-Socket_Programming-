@@ -39,7 +39,7 @@ public class Agent {
                 }
             }
 
-            bankSocket = new Socket("127.0.01",8888);
+            bankSocket = new Socket(bankHostNumber,Integer.parseInt(bankPortNumber));
             inputStream = new DataInputStream(bankSocket.getInputStream());
             outputStream = new DataOutputStream(bankSocket.getOutputStream());
             String clientMessage = "", serverMessage = "";

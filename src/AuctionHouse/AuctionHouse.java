@@ -56,7 +56,7 @@ public class AuctionHouse {
 
 
 
-            socket = new Socket("127.0.0.1", 8888);
+            socket = new Socket(bankHostNumber, Integer.parseInt(bankPortNumber));
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
 
@@ -74,13 +74,13 @@ public class AuctionHouse {
             auctionNumber = Integer.parseInt(number);
 
 
-            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),"127.0.0.1", itemList, socket, auctionNumber));
+            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),auctionHostNumber, itemList, socket, auctionNumber));
             threadServer.start();
 
             String clientMessage = "", serverMessage = "";
 
 
-            outputStream.writeUTF("h " + "127.0.0.1" + " "+ auctionPortNumber);
+            outputStream.writeUTF("h " + auctionHostNumber + " "+ auctionPortNumber);
             outputStream.flush();
 
             serverMessage = inputStream.readUTF();
