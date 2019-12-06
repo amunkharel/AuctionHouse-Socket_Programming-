@@ -291,10 +291,14 @@ public class Agent {
         }
 
         try {
-            System.out.println("here itemnumber is printed "+ itemNumber + " and amount bid");
+            System.out.println("You placed bid on item number" + itemNumber + " and amount bid "  +amountBid);
             auctionOutputStream.writeUTF( itemNumber+ " "+amountBid );
             auctionOutputStream.flush();
-            auctionResponse();
+
+            Thread wait = new Thread(new WaitAuctionMessage(auctionInputStream));
+            wait.start();
+            menu();
+            //auctionResponse();
         } catch (IOException e) {
             System.out.print(e.toString());
         }
