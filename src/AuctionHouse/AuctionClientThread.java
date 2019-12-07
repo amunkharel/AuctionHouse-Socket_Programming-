@@ -25,7 +25,7 @@ public class AuctionClientThread implements Runnable{
 
     private static  boolean currentlyBidding = false;
 
-
+    private String itemNameWithBid = "";
 
 
     private DataInputStream inputStream = null;
@@ -94,7 +94,6 @@ public class AuctionClientThread implements Runnable{
         try {
             System.out.println("waiting for agent input");
             clientMessage = inputStream.readUTF();
-            System.out.println("what i am reading here : "+ clientMessage);
 
             switch(clientMessage){
                 case "ItemList":
@@ -162,20 +161,17 @@ public class AuctionClientThread implements Runnable{
                 bankOutputStream.flush();
                 int agentBalance = Integer.parseInt(bankInputStream.readUTF());
                 if(agentBalance>=itemBidAmount) {
-                    System.out.println("agent has this balance " + agentBalance);
-                    System.out.println("agent has enough amount");
                     System.out.println("this is last agent id " + itemList.get(itemLocation-1).getAgentWithBid());
                     if (!(itemList.get(itemLocation - 1).getAgentWithBid() == -1)) {
                         timerRunning = false;
                         secondsPassed = 0;
-                        System.out.println("this should be printed ");
                         agentId = itemList.get(itemLocation - 1).getAgentWithBid();
-                        System.out.println("this is previous agent id " + agentId);
                         for (int i = 0; i < agents.size(); i++) {
                             if (agents.get(i).getAgentId() == agentId) {
                                 agent = agents.get(i);
                             }
                         }
+                        itemNameWithBid = itemList.get(itemLocation - 1).getName();
                         itemList.get(itemLocation - 1).setMinBid(itemBidAmount, agentNumber);
                         agentSocket = agent.getAgentClient();
 
@@ -186,10 +182,9 @@ public class AuctionClientThread implements Runnable{
                         timerRunning = true;
                         timerStart();
 
-                        //send message to agent with id itemList.get(itemLocation).getAgentWithBid()
 
                     } else {
-                        System.out.println("here i am 111111111  ");
+                        itemNameWithBid = itemList.get(itemLocation - 1).getName();
                         itemList.get(itemLocation - 1).setMinBid(itemBidAmount, agentNumber);
                         outputStream.writeUTF("pass");
                         outputStream.flush();
@@ -217,7 +212,6 @@ public class AuctionClientThread implements Runnable{
     public void  removeCurrentAgent() {
         for (int i = 0; i < agents.size(); i ++) {
             if(agents.get(i).getAgentId() == agentNumber) {
-                System.out.println(agentNumber);
 
                 agents.get(i).closeSocket();
                 agents.remove(i);
@@ -250,8 +244,14 @@ public class AuctionClientThread implements Runnable{
         //secondsPassed = 0;
         System.out.println("timer should be canceled");
 
-        String itemName = itemList.get(itemLocation - 1).getName();
-        itemList.remove(itemLocation - 1);
+        String itemName = "";
+        for(int i = 0; i<itemList.size(); i++){
+            if(itemList.get(i).getName().equals(itemNameWithBid)){
+                itemName = itemList.get(i).getName();
+                itemList.remove(i);
+            }
+        }
+        //itemList.remove(itemLocation - 1);
         try {
             outputStream.writeUTF("Congratulations !! Bid Successful, You got item " + itemName + ".");
             outputStream.flush();
