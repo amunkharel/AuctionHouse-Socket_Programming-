@@ -6,22 +6,43 @@ import java.net.Socket;
 import java.sql.SQLOutput;
 import java.util.Scanner;
 
+/**
+ * Project 5 - CS351, Fall 2019, Class for agent from where bank server
+ * is created.
+ * @version Date 2019-12-07
+ * @author Amun Kharel, Shreeman Gautam, Sandesh Timilsina
+ *
+ *
+ */
 public class Agent {
 
+    /**declaring the socket to communicate with bank */
     private Socket bankSocket = null;
+
+    /**declaring the data input stream to read message from the bank socket.*/
     private DataInputStream inputStream = null;
+
+    /**declaring the data output stream to write message from the bank socket. */
     private DataOutputStream outputStream = null;
 
+    /**declaring the socket to communicate with the auction. */
     private Socket auctionSocket = null;
 
+    /**declaring the data input stream to read message from the auction socket.*/
     private DataInputStream auctionInputStream = null;
 
+    /**declaring the data output stream to write message from the auction socket. */
     private DataOutputStream auctionOutputStream = null;
 
+    /**declaring the agent number to store the agent id */
     private int agentNumber = 0;
-    private int currentAuctionPort;
-    private String currentAuctionHost;
+
+    /**declaring the string auction information */
     private String[] auctionList;
+
+    /**
+     * start server method gets the information of the bank host name and port numberto communicate with with the bank.
+     */
     public void startServer(){
         try {
 
@@ -42,7 +63,7 @@ public class Agent {
             bankSocket = new Socket(bankHostNumber,Integer.parseInt(bankPortNumber));
             inputStream = new DataInputStream(bankSocket.getInputStream());
             outputStream = new DataOutputStream(bankSocket.getOutputStream());
-            String clientMessage = "", serverMessage = "";
+            String serverMessage = "";
             System.out.println("Type in your name : ");
             String agentName = br.readLine();
 
@@ -79,6 +100,9 @@ public class Agent {
 
     }
 
+    /**
+     * this method guides agent through the menu.
+     */
     public void menu() {
         String menuInput = "";
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
@@ -97,7 +121,6 @@ public class Agent {
                     outputStream.writeUTF("ListAuctionHouse");
                     outputStream.flush();
                     String arr = inputStream.readUTF();
-                    System.out.println("this is the arr :::::::::::::"+ arr);
                     auctionList = arr.split(" ");
 
                     auctionHouseMenu();
@@ -140,6 +163,10 @@ public class Agent {
                 menu();
         }
     }
+
+    /**
+     * this menu gets input from the agent for the auction house number and so gets connected to agent.
+     */
     public void auctionHouseMenu(){
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
         String menuInput = "";
@@ -176,13 +203,20 @@ public class Agent {
 
     }
 
+
+
+
     public void exitProgram() {
 
     }
 
-    public void connectToAuctionHouse(String hostNumber, int portNumber) {
 
-        System.out.println("from agent:::  hostnumber =" + hostNumber+ " portNumber = "+ portNumber);
+    /**
+     * this method connects to the socket of the auction house.
+     * @param hostNumber
+     * @param portNumber
+     */
+    public void connectToAuctionHouse(String hostNumber, int portNumber) {
         try{
             auctionSocket =new Socket(hostNumber,portNumber);
             auctionInputStream =new DataInputStream(auctionSocket.getInputStream());
@@ -207,6 +241,9 @@ public class Agent {
         }
     }
 
+    /**
+     * this method provides the information of the item list to the agent by the use of socket.
+     */
     public void singleAuctionHouseMenu() {
         String agentInput = "";
         BufferedReader br=new BufferedReader(new InputStreamReader(System.in));
@@ -215,7 +252,7 @@ public class Agent {
         try {
              agentInput = br.readLine();
         } catch (IOException e) {
-            e.printStackTrace();
+            System.out.println(e.toString());
         }
         switch(agentInput){
             case "1":
@@ -225,14 +262,14 @@ public class Agent {
                     bidMenu(strArr);
 
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println(e.toString());
                 }
             case "2":
                 try {
                     auctionOutputStream.writeUTF("Terminate");
                     menu();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println(e.toString());
                 }
             default:
                 break;
@@ -241,6 +278,10 @@ public class Agent {
 
     }
 
+    /**
+     * this method gets the input from agent to select the item in auction house, and amount of the bid to be made.
+     * @param arr
+     */
     public void bidMenu(String[] arr){
         System.out.println("Item list are given below: ");
         for (int i = 0; i<arr.length && arr.length>1;i+=2){
@@ -271,7 +312,7 @@ public class Agent {
                         auctionOutputStream.writeUTF("b");
                         auctionOutputStream.flush();
                     } catch (IOException e) {
-                        e.printStackTrace();
+                        System.out.println(e.toString());
                     }
                     bidMenu(arr);
                 } else {
@@ -284,7 +325,7 @@ public class Agent {
                     auctionOutputStream.writeUTF("b");
                     auctionOutputStream.flush();
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    System.out.println(e.toString());
                 }
                 singleAuctionHouseMenu();
             }
@@ -294,15 +335,12 @@ public class Agent {
             System.out.println("You placed bid on item number" + itemNumber + " and amount bid "  +amountBid);
             auctionOutputStream.writeUTF( itemNumber+ " "+amountBid );
             auctionOutputStream.flush();
-
             Thread wait = new Thread(new WaitAuctionMessage(auctionInputStream));
             wait.start();
             menu();
-            //auctionResponse();
         } catch (IOException e) {
             System.out.print(e.toString());
         }
-        System.out.println("bid is sent out to AH");
 
 
     }
@@ -310,6 +348,11 @@ public class Agent {
 
 
 
+    /**
+     *
+     * @param str is checked if it is an integer.
+     * @return true if the string passed is an integer.
+     */
     public boolean isInteger(String str){
         try{
             Integer.parseInt(str);

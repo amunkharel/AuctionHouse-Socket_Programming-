@@ -10,25 +10,57 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
 
+/**
+ * Project 5 - CS351, Fall 2019, Class for creating each bank client thread to handle each unique auction house and agent.
+ * @version Date 2019-12-07
+ * @author Amun Kharel, Shreeman Gautam, Sandesh Timilsina
+ *
+ *
+ */
 public class BankClientThread extends Thread {
 
+    /** declaring the socket to communicate with the client. */
     private Socket serverClient;
+
+    /**declaring the integer to store the client number */
     private int clientNumber;
+
+    /**declaring the data input stream to get access to read the message coming from the socket */
     private DataInputStream inputStream;
+
+    /**declaring the data output stream to get access to write the message going out to the socket. */
     private DataOutputStream outputStream;
+
+    /**declaring the string to store the client message recieved from the socket. */
     private String clientMessage = "";
+
+    /**declaring the string to store the server message to be sent to the socket. */
     private String serverMessage = "";
+
+    /**declaring the arraylist to store the auction house object. */
     private static List<AuctionHouse> allHouses = new ArrayList<AuctionHouse>();
+
+    /**declaring the arraylist to store the agent object. */
     private static List<Agent> agents = new ArrayList<Agent>();
     private AuctionHouse auctionHouse = null;
     private Agent agent = null;
 
 
+    /**
+     * constructor to set the client number and the server client
+     * @param clientNumber
+     * @param serverClient
+     */
     public BankClientThread(int clientNumber, Socket serverClient) {
         this.serverClient = serverClient;
         this.clientNumber = clientNumber;
     }
 
+    /**
+     * overriding the run method of the thread class.
+     * here we keep waiting for the client message and write to server based on the client message
+     * we use two separate method to handle auction client and agent client separately.
+     */
     public void run() {
         try {
             inputStream = new DataInputStream(serverClient.getInputStream());
@@ -60,6 +92,12 @@ public class BankClientThread extends Thread {
         }
     }
 
+    /**
+     * this method interacts auction house.
+     * we add new auction object to the auction arraylist.
+     * @param hostName of the auction house
+     * @param portNumber of the auction house.
+     */
     public void interactWithAuctionHouse(String hostName, int portNumber) {
 
         try {
@@ -76,6 +114,11 @@ public class BankClientThread extends Thread {
 
     }
 
+    /**
+     * this method keeps waiting for the message from the auction house. And replies to the auction house based on
+     * the auction house.
+     * @throws IOException
+     */
     public void waitForAuctionHouse() throws IOException {
         int agentNumber = -1;
         clientMessage = inputStream.readUTF();
@@ -84,8 +127,7 @@ public class BankClientThread extends Thread {
         int deposittoAuctionID = -1;
         int amountSold = -1;
 
-
-
+        //if the item is sold, item cost is added to the auction house account.
         if(clientMessage.contains("Sold")){
             String[] strArr = clientMessage.split(" ");
             deposittoAuctionID = Integer.parseInt(strArr[2]);
@@ -97,7 +139,7 @@ public class BankClientThread extends Thread {
             }
         }
 
-
+        //if the agent puts bid in the item, bank takes the money from agent account.
         if(clientMessage.contains("Block")){
             String[] strArr = clientMessage.split(" ");
             takeBalanceFromAgentID = Integer.parseInt(strArr[1]);
@@ -109,6 +151,7 @@ public class BankClientThread extends Thread {
             }
         }
 
+        //if agent gets outbidded, then the bank puts back money to the agents account
         if(clientMessage.contains("Unblock")){
             String[] strArr = clientMessage.split(" ");
             takeBalanceFromAgentID = Integer.parseInt(strArr[1]);
@@ -120,12 +163,8 @@ public class BankClientThread extends Thread {
             }
         }
 
-
-
-
-
+        //if the auction says terminate, then we remove auction house from the arraylist.
         if(clientMessage.contains("terminate")){
-
             String arr[] = clientMessage.split(" ");
             int removeFromList = Integer.parseInt(arr[1]);
             for(int i = 0; i< allHouses.size(); i++){
@@ -138,7 +177,7 @@ public class BankClientThread extends Thread {
             serverClient.close();
         }
 
-
+        //checks the amount of the agent.
         if(clientMessage.contains("checkAgentAmount")){
             agentNumber = Integer.parseInt(clientMessage.split(" ")[1]);
             for(int i = 0; i<agents.size(); i++){
@@ -147,6 +186,8 @@ public class BankClientThread extends Thread {
                 }
             }
         }
+
+        //creating the switch statement to check the message from the auction house.
         switch(clientMessage){
             case "balance":
                 outputStream.writeUTF("Your balance is "+ auctionHouse.getBalance());
@@ -159,16 +200,15 @@ public class BankClientThread extends Thread {
             default:
                 waitForAuctionHouse();
         }
-//        if(clientMessage.equals("terminate")){
-//            outputStream.close();
-//            inputStream.close();
-//            serverClient.close();
-//        }
 
     }
 
 
-
+    /**
+     *
+     * @param agentName is set for agent name
+     * @param amount is set for the amount agent has while agent is opening the new account.
+     */
     public void interactWithAgent(String agentName, int amount){
 
         try{
@@ -182,6 +222,11 @@ public class BankClientThread extends Thread {
 
     }
 
+    /**
+     * this method is called after the agent is created.
+     * here, bank keeps waiting for the agent message.
+     * @throws IOException
+     */
     public void waitForAgent() throws IOException {
         clientMessage = inputStream.readUTF();
         switch(clientMessage){
@@ -208,6 +253,9 @@ public class BankClientThread extends Thread {
         }
     }
 
+    /**
+     * @returns the string of the list of the auction houses currently registered in the bank.
+     */
     public String auctionInformation(){
         String str="";
         for(int i =0; i <allHouses.size();i ++){
@@ -215,17 +263,6 @@ public class BankClientThread extends Thread {
         }
         System.out.println("bank has this information "+ str);
         return str;
-    }
-
-        public boolean isInteger(String str){
-        try{
-            Integer.parseInt(str);
-        } catch(NumberFormatException e){
-            return false;
-        } catch (NullPointerException e){
-            return false;
-        }
-        return true;
     }
 
 }

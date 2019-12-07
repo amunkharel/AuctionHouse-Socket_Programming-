@@ -3,6 +3,7 @@ package AuctionHouse;
 import java.io.IOException;
 import java.net.Socket;
 
+
 public class Agent {
 
     private Socket agentClient = null;
