@@ -84,24 +84,45 @@ public class BankClientThread extends Thread {
         int deposittoAuctionID = -1;
         int amountSold = -1;
 
+
+
         if(clientMessage.contains("Sold")){
             String[] strArr = clientMessage.split(" ");
-            takeBalanceFromAgentID = Integer.parseInt(strArr[1]);
             deposittoAuctionID = Integer.parseInt(strArr[2]);
             amountSold = Integer.parseInt(strArr[3]);
-            for(int i = 0 ; i<agents.size(); i++){
-                if(agents.get(i).getId()== takeBalanceFromAgentID){
-                    agents.get(i).subtract(amountSold);
-                }
-            }
             for(int i = 0 ; i<allHouses.size(); i++){
                 if(allHouses.get(i).getId()== deposittoAuctionID){
                     allHouses.get(i).addBalance(amountSold);
                 }
             }
-
-
         }
+
+
+        if(clientMessage.contains("Block")){
+            String[] strArr = clientMessage.split(" ");
+            takeBalanceFromAgentID = Integer.parseInt(strArr[1]);
+            amountSold = Integer.parseInt(strArr[2]);
+            for(int i = 0 ; i<agents.size(); i++){
+                if(agents.get(i).getId()== takeBalanceFromAgentID){
+                    agents.get(i).subtract(amountSold);
+                }
+            }
+        }
+
+        if(clientMessage.contains("Unblock")){
+            String[] strArr = clientMessage.split(" ");
+            takeBalanceFromAgentID = Integer.parseInt(strArr[1]);
+            amountSold = Integer.parseInt(strArr[2]);
+            for(int i = 0 ; i<agents.size(); i++){
+                if(agents.get(i).getId()== takeBalanceFromAgentID){
+                    agents.get(i).add(amountSold);
+                }
+            }
+        }
+
+
+
+
 
         if(clientMessage.contains("terminate")){
 

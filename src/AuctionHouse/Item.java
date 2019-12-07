@@ -3,10 +3,10 @@ package AuctionHouse;
 public class Item {
 
     private String name;
-    private double minBid;
+    private int minBid;
     private int agentWithBid;
 
-    public Item(String name, double minBid){
+    public Item(String name, int minBid){
         this.name = name;
         this.minBid = minBid;
         this.agentWithBid = -1;
@@ -17,7 +17,7 @@ public class Item {
         return name;
     }
 
-    public double getMinBid(){
+    public int getMinBid(){
         return minBid;
     }
 

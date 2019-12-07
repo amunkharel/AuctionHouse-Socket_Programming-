@@ -172,11 +172,20 @@ public class AuctionClientThread implements Runnable{
                             }
                         }
                         itemNameWithBid = itemList.get(itemLocation - 1).getName();
+
+                        bankOutputStream.writeUTF("Unblock "+ agentId +  " " +
+                                itemList.get(itemLocation - 1).getMinBid() );
+                        bankOutputStream.flush();
+
+
                         itemList.get(itemLocation - 1).setMinBid(itemBidAmount, agentNumber);
                         agentSocket = agent.getAgentClient();
 
                         agentInputStream = new DataInputStream(agentSocket.getInputStream());
                         agentOutputStream = new DataOutputStream(agentSocket.getOutputStream());
+
+                        bankOutputStream.writeUTF("Block "+ agentNumber+  " " + itemBidAmount );
+                        bankOutputStream.flush();
                         agentOutputStream.writeUTF("Your bid was OutBidded.");
                         Thread.sleep(10000);
                         timerRunning = true;
@@ -186,8 +195,13 @@ public class AuctionClientThread implements Runnable{
                     } else {
                         itemNameWithBid = itemList.get(itemLocation - 1).getName();
                         itemList.get(itemLocation - 1).setMinBid(itemBidAmount, agentNumber);
+
+                        bankOutputStream.writeUTF("Block "+ agentNumber+  " " + itemBidAmount );
+                        bankOutputStream.flush();
+
                         outputStream.writeUTF("pass");
                         outputStream.flush();
+
                         if (timerRunning) {
                             timerStart();
                         }
@@ -241,8 +255,6 @@ public class AuctionClientThread implements Runnable{
 
 
     public void setTimeIsOver() {
-        //secondsPassed = 0;
-        System.out.println("timer should be canceled");
 
         String itemName = "";
         for(int i = 0; i<itemList.size(); i++){
@@ -257,6 +269,7 @@ public class AuctionClientThread implements Runnable{
             outputStream.flush();
             currentlyBidding = false;
             bankOutputStream.writeUTF("Sold "+ agentNumber+ " " + auctionHouseNumber + " " + itemBidAmount );
+            bankOutputStream.flush();
 
             //removeCurrentAgent();
         } catch (IOException e) {

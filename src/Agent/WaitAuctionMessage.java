@@ -28,7 +28,7 @@ public class WaitAuctionMessage implements Runnable {
                     System.out.println("Your bid was rejected.");
                     break;
                 case "pass":
-                    System.out.println("Waiting for 30 seconds ....");
+                    System.out.println("Your bid is placed.");
                     serverMessage = auctionInputStream.readUTF();
                     System.out.println(serverMessage);
                     break;

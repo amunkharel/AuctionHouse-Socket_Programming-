@@ -19,6 +19,10 @@ public class Agent {
     public void subtract(int price){
         amount = amount -price;
     }
+
+    public void add(int price){
+        amount = amount +price;
+    }
     public int getAmount(){
         return amount;
     }
