@@ -1,36 +1,63 @@
+/**
+ * Project 5 - CS351, Fall 2019, Class to start auction house client and server
+ * @version Date 2019-12-07
+ * @author Amun Kharel, Shreeman Gautam, Sandesh Timilsina
+ *
+ *
+ */
+
 package AuctionHouse;
 
 import java.io.*;
-import java.net.InetAddress;
+
 import java.net.Socket;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Scanner;
 
 public class AuctionHouse {
 
+    /** List of items in the auction house*/
     private List<Item> itemList = new ArrayList<Item>();
 
+    /** InputStream to get data from socket*/
     private  DataInputStream inputStream = null;
+
+    /** OutputStream to send data to sockets*/
     private DataOutputStream outputStream = null;
+
+    /** Socket for communication*/
     private Socket socket = null;
+
+    /** Balance of the Auction House*/
     private int balance = 0;
 
+    /** Boolean to check if someone is currently bidding in the auctionHouse*/
     private boolean isCurrentlyBidding = false;
 
+    /** Auction House Number registered in the bank*/
     private int auctionNumber = -1;
 
-    public AuctionHouse() {
-    }
+
+
+
+    /**
+     * Starts the connection with bank and opens server for connecting
+     * with auction house
+     *
+     *
+     */
+
 
     public void startServer() {
         try {
 
+            //asks for bank's host name
             BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
             System.out.println("Type Bank Host Name: ");
             String bankHostNumber = br.readLine();
             setItem();
 
+            //asks for bank's port number, must be integer
             String bankPortNumber = "";
             boolean isLegal = false;
             while(!isLegal){
@@ -41,9 +68,11 @@ public class AuctionHouse {
                 }
             }
 
+            //asks for auction houses host name to register in bank
             System.out.println("Type Your Host Name: ");
             String auctionHostNumber = br.readLine();
 
+            //asks for port name for registration
             String auctionPortNumber = "";
             boolean isLegalPort = false;
             while(!isLegalPort){
@@ -55,14 +84,13 @@ public class AuctionHouse {
             }
 
 
-
+            //makes connections with bank
             socket = new Socket(bankHostNumber, Integer.parseInt(bankPortNumber));
             inputStream = new DataInputStream(socket.getInputStream());
             outputStream = new DataOutputStream(socket.getOutputStream());
 
             int a = 0;
             String intialMessage = inputStream.readUTF();
-            System.out.println(intialMessage);
 
             String number = "";
 
@@ -71,20 +99,25 @@ public class AuctionHouse {
                 a++;
             }
 
+            //gets client number of auction house
             auctionNumber = Integer.parseInt(number);
 
 
-            Thread threadServer = new Thread(new AuctionServer(Integer.parseInt(auctionPortNumber),auctionHostNumber, itemList, socket, auctionNumber));
+            //starts server for auction house
+            Thread threadServer = new Thread(new AuctionServer
+                    (Integer.parseInt(auctionPortNumber),auctionHostNumber
+                            , itemList, socket, auctionNumber));
             threadServer.start();
 
             String clientMessage = "", serverMessage = "";
 
 
-            outputStream.writeUTF("h " + auctionHostNumber + " "+ auctionPortNumber);
+            //registers to bank with auctionHostNumber and auctionPortNumber
+            outputStream.writeUTF("h " + auctionHostNumber +
+                    " "+ auctionPortNumber);
             outputStream.flush();
 
             serverMessage = inputStream.readUTF();
-            System.out.println(serverMessage);
 
             menu();
 
@@ -97,11 +130,17 @@ public class AuctionHouse {
     }
 
 
+
+    /**
+     * Menu for the auction house to check balance or terminate the program
+     */
+
     public void menu() {
 
         String menuInput = "";
         BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
-        System.out.println("Menu\n1) Type '1' to check balance \n" +"2) Type '2' to terminate the program");
+        System.out.println("Menu\n1) Type '1' to check balance \n" +"2) Type '2'" +
+                " to terminate the program");
 
         try {
              menuInput = br.readLine();
@@ -112,6 +151,7 @@ public class AuctionHouse {
         switch (menuInput) {
             case "1":
                 try {
+                    //asks for balance in the balance
                     outputStream.writeUTF("balance");
                     outputStream.flush();
                     System.out.println(inputStream.readUTF());
@@ -123,6 +163,7 @@ public class AuctionHouse {
 
             case "2":
 
+                //if auctionHouse is currently Bidding cannot terminate the program
                 if(AuctionServer.isCurrentlyBidding()) {
                     System.out.println("Bid is in process at the moment");
                     menu();
@@ -137,7 +178,7 @@ public class AuctionHouse {
                             outputStream.close();
                             inputStream.close();
                         } catch (IOException ex) {
-                            ex.printStackTrace();
+                            System.out.println(ex.toString());
                         }
                     } catch (IOException e) {
                         System.out.println(e.toString());
@@ -153,6 +194,10 @@ public class AuctionHouse {
 
     }
 
+
+    /**
+     * Exists the program
+     */
     public void exitProgram() {
         System.out.println("sending message, closing the account");
         try {
@@ -165,6 +210,10 @@ public class AuctionHouse {
 
     }
 
+
+    /**
+     * Sets item in the list of items
+     */
     public void setItem(){
         itemList.add(new Item("microwave", 10));
         itemList.add(new Item("Freezer", 200));
@@ -183,6 +232,12 @@ public class AuctionHouse {
         itemList.add(new Item("Coke", 12));
     }
 
+
+    /**
+     * Checks if given string is integer or not
+     *
+     * @return boolean, true if integer, else false
+     */
     public boolean isInteger(String str){
         try{
             Integer.parseInt(str);
