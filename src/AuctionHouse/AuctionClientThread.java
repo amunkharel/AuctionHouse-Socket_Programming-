@@ -122,6 +122,7 @@ public class AuctionClientThread implements Runnable{
             int i = 0;
             String number = "";
 
+            System.out.println("this is client message "+ clientMessage);
             //gets the clientNumber of agent
             while (clientMessage.charAt(i) != ' ' ) {
                 number = number + clientMessage.charAt(i);
@@ -275,6 +276,7 @@ public class AuctionClientThread implements Runnable{
                         if (timerRunning) {
                             timerStart();
                         }
+                    
                     }
                 }else{
                     outputStream.writeUTF("fail");

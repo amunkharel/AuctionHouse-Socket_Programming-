@@ -39,6 +39,8 @@ public class Agent {
     /**declaring the string auction information */
     private String[] auctionList;
 
+    Thread wait = null;
+
     /**
      * start server method gets the information of the bank host name and port numberto communicate with with the bank.
      */
@@ -142,7 +144,7 @@ public class Agent {
                 break;
             case "3":
 
-                if(WaitAuctionMessage.isIsWaiting()) {
+                if(!(wait == null) && wait.isAlive()) {
                     System.out.println("Agent is waiting for message");
                     menu();
                     break;
@@ -216,7 +218,7 @@ public class Agent {
 
 
     public void exitProgram() {
-
+        System.exit(0);
     }
 
 
@@ -344,7 +346,7 @@ public class Agent {
             System.out.println("You placed bid on item number" + itemNumber + " and amount bid "  +amountBid);
             auctionOutputStream.writeUTF( itemNumber+ " "+amountBid );
             auctionOutputStream.flush();
-            Thread wait = new Thread(new WaitAuctionMessage(auctionInputStream));
+            wait = new Thread(new WaitAuctionMessage(auctionInputStream));
             wait.start();
             menu();
         } catch (IOException e) {
