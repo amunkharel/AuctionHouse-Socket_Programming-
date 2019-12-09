@@ -53,9 +53,9 @@ sufficient funds. To check sufficiency of funds, it will send a message to the b
  Agent will communicate with bank to check balance and close account.  <br>
  It will communicate with auction house to make bids and buy items.  <br>
  
- ## Description of Program Internals
+## Description of Program Internals
  
- ### Description of Classes in Bank Package
+### Description of Classes in Bank Package
  
  Bank Controller- Bank Controller initializes the Bank object of the program. <br>
  
@@ -67,7 +67,7 @@ sufficient funds. To check sufficiency of funds, it will send a message to the b
  
  Auction House – Information about its client auction house is stored in the class. The Host Name and Port Number of auction house is also stored here so that Bank Client Thread can give this information to Agents. <br>
  
-  ### Description of Classes in Auction House Package
+ ### Description of Classes in Auction House Package
   
   Auction House Controller- Initializes Auction House object, which creates connects with Bank and creates server thread to contact agent/agents. <br>
   
@@ -81,8 +81,7 @@ sufficient funds. To check sufficiency of funds, it will send a message to the b
   
   Item – Item present in the auction house including its minimum bid, name, etc. <br>
 
-
-   ### Description of Classes in Agent Package
+### Description of Classes in Agent Package
    
    Agent Controller- Initializes Agent object. <br>
    
@@ -90,16 +89,14 @@ sufficient funds. To check sufficiency of funds, it will send a message to the b
    
    Wait Auction Message – Separate Thread created for agent to wait on whether he won the item on auction or got outbidded. <br>
    
-   ## Know Bugs and Feature Request
+## Know Bugs and Feature Request
    
    
-   
-   
-   ## References
+## References
    
    Mostly google and stack-overflow to find simple solutions such as timer, multithreaded
    server, etc. 
    
-   ## Author - Amun Kharel
+## Author - Amun Kharel
    
-   ## Date - 2019/12/08
+## Date - 2019/12/08
