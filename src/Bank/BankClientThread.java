@@ -70,13 +70,11 @@ public class BankClientThread extends Thread {
             outputStream.flush();
             clientMessage = inputStream.readUTF();
             if(clientMessage.split(" ")[0].equals("a")) {
-                System.out.println("Code for agent");
                 interactWithAgent(clientMessage.split(" ")[1],
                         Integer.parseInt(clientMessage.split(" ")[2]));
             }
 
             else if(clientMessage.split(" ")[0].equals("h")) {
-                System.out.println("Code for auction house");
                 interactWithAuctionHouse(clientMessage.split(" ")[1],
                         Integer.parseInt(clientMessage.split(" ")[2]));
             }
@@ -103,9 +101,9 @@ public class BankClientThread extends Thread {
         try {
                 auctionHouse = new AuctionHouse(clientNumber,hostName,portNumber);
                 allHouses.add(auctionHouse);
-                System.out.println("AuctionHouse got registered in Bank");
+                System.out.print("AuctionHouse got registered in Bank");
                 outputStream.writeUTF("Your house is successfully registered.");
-                System.out.println(" with host name " + hostName + "and port number "+ portNumber);
+                System.out.println(" with host name " + hostName + " and port number "+ portNumber);
                 outputStream.flush();
                 waitForAuctionHouse();
             } catch (IOException e) {
@@ -122,7 +120,6 @@ public class BankClientThread extends Thread {
     public void waitForAuctionHouse() throws IOException {
         int agentNumber = -1;
         clientMessage = inputStream.readUTF();
-        System.out.println(clientMessage);
         int takeBalanceFromAgentID = -1;
         int deposittoAuctionID = -1;
         int amountSold = -1;
@@ -261,7 +258,6 @@ public class BankClientThread extends Thread {
         for(int i =0; i <allHouses.size();i ++){
             str += allHouses.get(i).getId() + " " +allHouses.get(i).getHostname() + " "+allHouses.get(i).getPort()+" ";
         }
-        System.out.println("bank has this information "+ str);
         return str;
     }
 
