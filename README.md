@@ -67,7 +67,7 @@ sufficient funds. To check sufficiency of funds, it will send a message to the b
  
  Auction House – Information about its client auction house is stored in the class. The Host Name and Port Number of auction house is also stored here so that Bank Client Thread can give this information to Agents. <br>
  
- ### Description of Classes in Auction House Package
+### Description of Classes in Auction House Package
   
   Auction House Controller- Initializes Auction House object, which creates connects with Bank and creates server thread to contact agent/agents. <br>
   
