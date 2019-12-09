@@ -97,6 +97,6 @@ sufficient funds. To check sufficiency of funds, it will send a message to the b
    Mostly google and stack-overflow to find simple solutions such as timer, multithreaded
    server, etc. 
    
-## Author - Amun Kharel
+## Author of ReadMe File - Amun Kharel
    
 ## Date - 2019/12/08
