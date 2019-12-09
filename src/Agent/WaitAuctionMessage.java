@@ -12,12 +12,15 @@ import java.io.IOException;
 public class WaitAuctionMessage implements Runnable {
     private DataInputStream auctionInputStream = null;
 
+    private static boolean isWaiting;
+
     /**
      *
      * @param auctionInputStream gives access to class to keep waiting for the message from the auction house.
      */
     public WaitAuctionMessage(DataInputStream auctionInputStream){
         this.auctionInputStream = auctionInputStream;
+        isWaiting = false;
     }
 
     /**
@@ -43,17 +46,24 @@ public class WaitAuctionMessage implements Runnable {
             switch (serverMessage) {
                 case "fail":
                     System.out.println("Your bid was rejected.");
+                    isWaiting = false;
                     break;
                 case "pass":
                     System.out.println("Your bid is placed.");
+                    isWaiting = true;
                     serverMessage = auctionInputStream.readUTF();
                     System.out.println(serverMessage);
                     break;
                 case "Sold":
+                    isWaiting = false;
                     System.out.println(congratsMessage);
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    public static boolean isIsWaiting() {
+        return isWaiting;
     }
 }

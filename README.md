@@ -53,6 +53,17 @@ sufficient funds. To check sufficiency of funds, it will send a message to the b
  Agent will communicate with bank to check balance and close account.  <br>
  It will communicate with auction house to make bids and buy items.  <br>
  
+### Description of Menu in Agent
+Menu feature of Agent consists of list of auction house, check balance and closing account.
+To check list of auction houses type '1', to check balance, type '2' and to close account, type '3'.<br>
+If you type 1, you will get current list of auction houses now registered to bank. 
+If there are no auction house, it will say so. However, if they have auction houses, it
+will start from number 0. To check first auction house and its items, type '0'. 
+Now you are connected with auction house. To check their item, type '1'. You will be given
+list of items with its minimum bid amount. Type either '1', '2' or '3', since we will just have 3 items. Next up, type 
+your bid amount. It should be an integer number. If your bid is successful wait for message
+to arrive. 
+ 
 ## Description of Program Internals
  
 ### Description of Classes in Bank Package

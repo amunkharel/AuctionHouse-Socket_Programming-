@@ -1,10 +1,9 @@
 package Agent;
 
 import java.io.*;
-import java.net.InetAddress;
+
 import java.net.Socket;
-import java.sql.SQLOutput;
-import java.util.Scanner;
+
 
 /**
  * Project 5 - CS351, Fall 2019, Class for agent from where bank server
@@ -142,21 +141,31 @@ public class Agent {
                 menu();
                 break;
             case "3":
-                try {
-                    //boolean condition, check if any item is currently on bidding.
-                    outputStream.writeUTF("terminate "+ agentNumber);
-                    outputStream.flush();
-                    try {
-                        outputStream.close();
-                        inputStream.close();
-                    } catch (IOException ex) {
-                        ex.printStackTrace();
-                    }
-                } catch (IOException e) {
-                    System.out.println(e.toString());
 
+                if(WaitAuctionMessage.isIsWaiting()) {
+                    System.out.println("Agent is waiting for message");
+                    menu();
+                    break;
                 }
-                exitProgram();
+
+                else  {
+                    try {
+                        //boolean condition, check if any item is currently on bidding.
+                        outputStream.writeUTF("terminate "+ agentNumber);
+                        outputStream.flush();
+                        try {
+                            outputStream.close();
+                            inputStream.close();
+                        } catch (IOException ex) {
+                            ex.printStackTrace();
+                        }
+                    } catch (IOException e) {
+                        System.out.println(e.toString());
+
+                    }
+                    exitProgram();
+                }
+
                 break;
 
             default:
