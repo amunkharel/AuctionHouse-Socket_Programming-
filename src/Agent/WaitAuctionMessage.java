@@ -60,10 +60,10 @@ public class WaitAuctionMessage implements Runnable {
                     break;
                 case "out":
                     System.out.println(clonedMessage);
+                    auctionResponse();
                     break;
                 default:
                     System.out.println(serverMessage);
-                    auctionResponse();
             }
         } catch (IOException e) {
             e.printStackTrace();

@@ -272,7 +272,7 @@ public class AuctionClientThread implements Runnable{
                         } else {
                             agentOutputStream.writeUTF("Your bid was Out Bidded.");
                         }
-                        Thread.sleep(5000);
+                        Thread.sleep(10000);
                         timerRunning = true;
                         timerStart();
 
