@@ -185,6 +185,7 @@ public class AuctionHouse {
 
                     }
                     exitProgram();
+                    System.exit(0);
                 }
                 break;
             default:
