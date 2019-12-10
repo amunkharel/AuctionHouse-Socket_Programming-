@@ -78,6 +78,8 @@ public class AuctionClientThread implements Runnable{
     /** Client Number of current auction house*/
     private int auctionHouseNumber;
 
+    private Agent currentAgent = null;
+
     /**
      * Constructor for AuctionClientThread
      *
@@ -132,9 +134,18 @@ public class AuctionClientThread implements Runnable{
             agentNumber = Integer.parseInt(number);
 
             //adds agent to list of agents
-            agents.add(new Agent(agentClient, agentNumber));
-
-
+            currentAgent = new Agent(agentClient, agentNumber);
+            boolean isPresent = false;
+            for(int m = 0; m<agents.size();m++){
+                if(agents.get(m).getAgentId()==agentNumber){
+                    isPresent= true;
+                    System.out.println("we already have agent");
+                }
+            }
+            if(!isPresent){
+                agents.add(currentAgent);
+            }
+            System.out.println("this is size of agent list "+ agents.size());
             waitForAgent();
 
         } catch (IOException e) {
@@ -239,6 +250,10 @@ public class AuctionClientThread implements Runnable{
                                 agent = agents.get(i);
                             }
                         }
+                        boolean sameSocket =false;
+                        if(agentId == agentNumber){
+                            sameSocket = true;
+                        }
                         itemNameWithBid = itemList.get(itemLocation - 1).getName();
 
                         //unblock previous amount
@@ -249,14 +264,15 @@ public class AuctionClientThread implements Runnable{
 
                         itemList.get(itemLocation - 1).setMinBid(itemBidAmount, agentNumber);
                         agentSocket = agent.getAgentClient();
-
-                        agentInputStream = new DataInputStream(agentSocket.getInputStream());
                         agentOutputStream = new DataOutputStream(agentSocket.getOutputStream());
-
                         bankOutputStream.writeUTF("Block "+ agentNumber+  " " + itemBidAmount );
                         bankOutputStream.flush();
-                        agentOutputStream.writeUTF("Your bid was OutBidded.");
-                        Thread.sleep(10000);
+                        if(sameSocket){
+                            outputStream.writeUTF("You Out Bidded your own previous bid.CurrentBid waiting:");
+                        } else {
+                            agentOutputStream.writeUTF("Your bid was Out Bidded.");
+                        }
+                        Thread.sleep(5000);
                         timerRunning = true;
                         timerStart();
 
@@ -276,7 +292,7 @@ public class AuctionClientThread implements Runnable{
                         if (timerRunning) {
                             timerStart();
                         }
-                    
+
                     }
                 }else{
                     outputStream.writeUTF("fail");

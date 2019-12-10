@@ -36,11 +36,15 @@ public class WaitAuctionMessage implements Runnable {
     public void auctionResponse() {
         try {
             String serverMessage = auctionInputStream.readUTF();
-            String congratsMessage = serverMessage;
+            String clonedMessage = serverMessage;
             if (serverMessage.contains("Congratulations")) {
                 serverMessage = "Sold";
 
             }
+            if(serverMessage.contains("Out Bidded")){
+                serverMessage = "out";
+            }
+
             switch (serverMessage) {
                 case "fail":
                     System.out.println("Your bid was rejected.");
@@ -49,9 +53,17 @@ public class WaitAuctionMessage implements Runnable {
                     System.out.println("Your bid is placed.");
                     serverMessage = auctionInputStream.readUTF();
                     System.out.println(serverMessage);
+                    auctionResponse();
                     break;
                 case "Sold":
-                    System.out.println(congratsMessage);
+                    System.out.println(clonedMessage);
+                    break;
+                case "out":
+                    System.out.println(clonedMessage);
+                    break;
+                default:
+                    System.out.println(serverMessage);
+                    auctionResponse();
             }
         } catch (IOException e) {
             e.printStackTrace();
