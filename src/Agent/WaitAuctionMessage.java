@@ -41,9 +41,13 @@ public class WaitAuctionMessage implements Runnable {
                 serverMessage = "Sold";
 
             }
-            if(serverMessage.contains("Out Bidded")){
+            if(serverMessage.contains("other")){
                 serverMessage = "out";
             }
+            if(serverMessage.contains("own")){
+                serverMessage = "selfout";
+            }
+
 
             switch (serverMessage) {
                 case "fail":
@@ -51,14 +55,15 @@ public class WaitAuctionMessage implements Runnable {
                     break;
                 case "pass":
                     System.out.println("Your bid is placed.");
-                    serverMessage = auctionInputStream.readUTF();
-                    System.out.println(serverMessage);
                     auctionResponse();
                     break;
                 case "Sold":
                     System.out.println(clonedMessage);
                     break;
                 case "out":
+                    System.out.println(clonedMessage);
+                    return;
+                case "selfout":
                     System.out.println(clonedMessage);
                     auctionResponse();
                     break;

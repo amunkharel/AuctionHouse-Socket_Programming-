@@ -123,8 +123,6 @@ public class AuctionClientThread implements Runnable{
 
             int i = 0;
             String number = "";
-
-            System.out.println("this is client message "+ clientMessage);
             //gets the clientNumber of agent
             while (clientMessage.charAt(i) != ' ' ) {
                 number = number + clientMessage.charAt(i);
@@ -139,13 +137,11 @@ public class AuctionClientThread implements Runnable{
             for(int m = 0; m<agents.size();m++){
                 if(agents.get(m).getAgentId()==agentNumber){
                     isPresent= true;
-                    System.out.println("we already have agent");
                 }
             }
             if(!isPresent){
                 agents.add(currentAgent);
             }
-            System.out.println("this is size of agent list "+ agents.size());
             waitForAgent();
 
         } catch (IOException e) {
@@ -217,10 +213,10 @@ public class AuctionClientThread implements Runnable{
         DataOutputStream agentOutputStream = null;
 
         Socket agentSocket = null;
-
-        itemLocation = Integer.parseInt(message.split(" ")[0]);
-        itemBidAmount = Integer.parseInt(message.split(" ")[1]);
-
+        if(message.split(" ").length>1) {
+            itemLocation = Integer.parseInt(message.split(" ")[0]);
+            itemBidAmount = Integer.parseInt(message.split(" ")[1]);
+        }
 
         try {
 
@@ -270,7 +266,7 @@ public class AuctionClientThread implements Runnable{
                         if(sameSocket){
                             outputStream.writeUTF("You Out Bidded your own previous bid.CurrentBid waiting:");
                         } else {
-                            agentOutputStream.writeUTF("Your bid was Out Bidded.");
+                            agentOutputStream.writeUTF("Your bid was Out Bidded by other.");
                         }
                         Thread.sleep(10000);
                         timerRunning = true;
