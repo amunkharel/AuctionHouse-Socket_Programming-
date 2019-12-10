@@ -101,6 +101,15 @@ to arrive.
    Wait Auction Message – Separate Thread created for agent to wait on whether he won the item on auction or got outbidded. <br>
    
 ## Know Bugs and Feature Request
+   1) We forgot to add the item description in the project. Our item has info such as name, minimum-bid but does
+   not have description for the item. <br>
+   2) We did not create menu for bank. We wanted a menu to terminate bank. It was goal with 
+   least priority but we did not get to it since we got busy fixing bugs <br>
+   3) Agent does not know what items he has. Agent just gets a congratulations message
+   on which item the agent got but it cannot see its list of item. <br>
+   4) Items are hard coded in the program and not generated randomly. Every auction house gets the
+   same item. <br>
+   5) When I terminate Agent, it prints "Eof exception " on auction house, but the program runs normally <br>
    
    
 ## References

@@ -1,4 +1,0 @@
-Item0 50
-Item1 40
-Item2 15
-Item3 20
